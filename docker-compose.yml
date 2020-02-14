@@ -1,0 +1,33 @@
+version: '3'
+services:
+  cassandra1:
+    image: 'bitnami/cassandra:latest'
+    environment:
+      - CASSANDRA_CLUSTER_NAME=test
+      - CASSANDRA_SEEDS=cassandra1
+      - CASSANDRA_PASSWORD_SEEDER=yes
+      - CASSANDRA_USER=cassandra
+      - CASSANDRA_PASSWORD=jph
+    container_name: cassandra1
+    ports:
+      - "9042:9042"
+      - "9160:9160"
+    volumes:
+      - ./bitnami/cassandra:/bitnami
+  redis:
+    image: "redislabs/redisearch:latest"
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis_data:/bitnami/redis/data
+
+  insight:
+    image: "redislabs/redisinsight:latest"
+    container_name: insight
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./redisinsight:/db
+    depends_on:
+      - redis
