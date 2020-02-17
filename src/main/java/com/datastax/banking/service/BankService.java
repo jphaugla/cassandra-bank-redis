@@ -20,14 +20,16 @@ public class BankService {
 	private static String contactPointsStr = PropertyHelper.getProperty("contactPoints", "localhost");
 	private static BankService bankService = new BankService();
 	private BankDao dao;
-	//private BankRedisDao redisDao;
+	private BankRedisDao redisDao;
 	private long timerSum = 0;
 	private AtomicLong timerCount= new AtomicLong();
 	
 	private BankService(){
 		dao = new BankDao(contactPointsStr.split(","));
+		redisDao = new BankRedisDao();
+		redisDao.setHost("localhost",6379);
 	}
-	// private BankRedisService() { redisDao = new BankRDao(contactPointsStr.split(","));}
+
 	
 	public static BankService getInstance(){
 		return bankService;		
@@ -38,7 +40,8 @@ public class BankService {
 		return dao.getCustomer(customerId);
 	}
 	public List<Customer> getCustomerByPhone(String phoneString){
-		return dao.getCustomerByPhone(phoneString);
+		List<String> customerIDList = redisDao.getCustomerIdsbyPhone(phoneString);
+		return dao.getCustomerListFromIDs(customerIDList);
 	}
 	public List<Customer> getCustomerByFullNamePhone(String fullName, String phoneString){
 

@@ -134,6 +134,21 @@ public class Customer {
 	public void setPhone_numbers(List<Phone> phone_numbers) {
 		this.phone_numbers = phone_numbers;
 	}
+	public List<String> retrieveAllPhones() {
+		List<Phone> listPhones =  getPhone_numbers();
+		List<String> onlyNumbers = new ArrayList<String> ();
+		for (Phone phone : listPhones) {
+			onlyNumbers.add(phone.getPhone_number());
+		}
+		return onlyNumbers;
+	}
+
+	public String retrieveStringOfPhones() {
+		String onlyNumbers = String.join(";", this.retrieveAllPhones());
+		return onlyNumbers;
+	};
+
+
 	public void addPhone (String phone_number,String phone_type) {
 		Phone phone = new Phone();
 		phone.setPhone_number(phone_number);

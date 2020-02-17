@@ -1,17 +1,17 @@
 package com.datastax.banking.dao;
-import com.sun.istack.Pool;
+import io.redisearch.Query;
 import io.redisearch.client.AddOptions;
 import io.redisearch.client.Client;
 import io.redisearch.Document;
+import io.redisearch.SearchResult;
 import com.datastax.banking.model.Customer;
 import org.apache.commons.lang3.StringUtils;
 import io.redisearch.Schema;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisDataException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,9 +68,21 @@ public class BankRedisDao  {
         fields.put("last_name", customer.getLast_name());
         fields.put("first_name", customer.getFirstName());
         fields.put("zipcode", customer.getzipcode());
+        fields.put("phone", customer.retrieveStringOfPhones());
         custClient.addDocument(new Document(customer.getCustomerId(), fields), new AddOptions());
         Map<String, Object> info = custClient.getInfo();
         return Integer.parseInt((String) info.get("num_docs"));
+    }
+    public List<String> getCustomerIdsbyPhone(String phoneString) {
+        Query q = new Query (phoneString).limitFields("phone");
+        SearchResult searchResult = custClient.search(q);
+        List<String> custidList = new ArrayList<String>();
+        // Long numDocs = searchResult.totalResults;
+        List<Document> ldoc = searchResult.docs;
+        for(Document document : ldoc) {
+            custidList.add(document.toString());
+        }
+        return custidList;
     }
 
 }

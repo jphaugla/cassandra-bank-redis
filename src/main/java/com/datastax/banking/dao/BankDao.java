@@ -226,6 +226,14 @@ public class BankDao {
 		return customerMapper.get(customerId);
 	}
 
+	public List<Customer> getCustomerListFromIDs(List<String> custIDs) {
+		List<Customer> customerList = new ArrayList<Customer>();
+		for (String custid: custIDs) {
+			customerList.add(getCustomer(custid));
+		}
+		return customerList;
+	};
+
 	public List<Customer> getCustomerByPhone(String phoneString) {
 
 		String cql = "select * from bank.customer where solr_query = '{!tuple}phone_numbers.phone_number:" + phoneString + "'";
