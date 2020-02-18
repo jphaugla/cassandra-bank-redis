@@ -1,4 +1,5 @@
 package com.datastax.banking.dao;
+import com.datastax.banking.webservice.BankingWS;
 import io.redisearch.Query;
 import io.redisearch.client.AddOptions;
 import io.redisearch.client.Client;
@@ -8,6 +9,8 @@ import com.datastax.banking.model.Customer;
 import org.apache.commons.lang3.StringUtils;
 import io.redisearch.Schema;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisDataException;
 
@@ -20,6 +23,8 @@ public class BankRedisDao  {
     private String hostname;
     private Integer portNo;
     private Client custClient;
+
+    private static final Logger logger = LoggerFactory.getLogger(BankingWS.class);
 
     public Client getClient(String index_name) {
         return custClient;
@@ -74,15 +79,34 @@ public class BankRedisDao  {
         return Integer.parseInt((String) info.get("num_docs"));
     }
     public List<String> getCustomerIdsbyPhone(String phoneString) {
+        logger.warn("in bankredisdao.getCustomerIdsbyPhone with phone=" + phoneString);
         Query q = new Query (phoneString).limitFields("phone");
         SearchResult searchResult = custClient.search(q);
         List<String> custidList = new ArrayList<String>();
-        // Long numDocs = searchResult.totalResults;
+        Long numDocs = searchResult.totalResults;
+        logger.warn("after numdocs=", numDocs.toString());
         List<Document> ldoc = searchResult.docs;
         for(Document document : ldoc) {
             custidList.add(document.toString());
         }
+        logger.warn("before return", numDocs.toString());
         return custidList;
     }
-
+    public List<String> getCustomerIdsbyState(String state) {
+        logger.warn("in bankredisdao.getCustomerIdsbyState with state=" + state);
+        Query q = new Query ("@state_abbreviation:" + state);
+        // Query q = new Query (state).limitFields("state_abbreviation");
+        setHost("localhost",6379);
+        SearchResult searchResult = createClient("customer").search(q);
+        List<String> custidList = new ArrayList<String>();
+        Long numDocs = searchResult.totalResults;
+        logger.warn("after numdocs=" + numDocs);
+        List<Document> ldoc = searchResult.docs;
+        for(Document document : ldoc) {
+            custidList.add(document.getId());
+            logger.warn("adding to custid list string=" + document.getId());
+        }
+        logger.warn("before return");
+        return custidList;
+    }
 }

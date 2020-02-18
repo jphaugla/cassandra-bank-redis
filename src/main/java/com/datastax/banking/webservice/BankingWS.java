@@ -1,56 +1,64 @@
 package com.datastax.banking.webservice;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.jws.WebService;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.datastax.banking.model.Account;
 import com.datastax.banking.model.Customer;
 import com.datastax.banking.model.Transaction;
 import com.datastax.banking.service.BankService;
 
-@WebService
-@Path("/")
-public class BankingWS {
+import com.datastax.demo.utils.KillableRunner;
+import com.datastax.demo.utils.PropertyHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-	private Logger logger = LoggerFactory.getLogger(BankingWS.class);
-	private SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyyMMdd");
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+
+@RestController
+
+public class BankingWS {
+	private static final Logger logger = LoggerFactory.getLogger(BankingWS.class);
+
+
+	@Autowired
 
 	//Service Layer.
 	private BankService bankService = BankService.getInstance();
 
 	
-	@GET
-	@Path("/get/customer/{customerid}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getCustomer(@PathParam("customerid") String customerId) {
-		
-		Customer customer = bankService.getCustomer(customerId);
-		
-		return Response.status(Status.OK).entity(customer).build();
+	@GetMapping("/customer")
+
+	public Customer getCustomer(@RequestParam String customerId) {
+		return bankService.getCustomer(customerId);
 	}
 
-	@GET
-	@Path("/get/customerByPhone/{phoneString}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getCustomerByPhone(@PathParam("phoneString") String phoneString) {
+	@GetMapping("/customerByPhone")
 
-		List<Customer> customers = bankService.getCustomerByPhone(phoneString);
-
-		return Response.status(Status.OK).entity(customers).build();
+	public List<Customer> getCustomerByPhone(@RequestParam String phoneString) {
+		logger.debug("IN get customerByPhone with phone as " + phoneString);
+		return bankService.getCustomerByPhone(phoneString);
 	}
+	@GetMapping("/customerByState")
+
+	public List<Customer> getCustomerByState(@RequestParam String state) {
+		logger.debug("IN get customerByState with state as " + state);
+		return bankService.getCustomerByState(state);
+	}
+	@RequestMapping("/generateData")
+	public String generateData() {
+
+		bankService.generateData();
+
+		return "Done";
+	}
+
+	/*
 	@GET
 	@Path("/get/getcctransactions/{creditcardno}/{from}/{to}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -192,6 +200,8 @@ public class BankingWS {
 
 		return Response.status(Status.OK).entity(transactions).build();
 	}
+
+ */
 
 	
 }

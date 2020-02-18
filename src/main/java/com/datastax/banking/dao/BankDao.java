@@ -41,7 +41,7 @@ import static com.datastax.driver.mapping.Mapper.Option.tracing;
  */
 public class BankDao {
 
-	private static Logger logger = LoggerFactory.getLogger(BankDao.class);
+	// private static Logger logger = LoggerFactory.getLogger(BankDao.class);
 	private Session session;
 
 	private static String keyspaceName = "bank";
@@ -86,7 +86,7 @@ public class BankDao {
 
 	public BankDao(String[] contactPoints) {
 
-		Cluster cluster = Cluster.builder().addContactPoints(contactPoints).withCredentials("cassandra","jph").build();
+		Cluster cluster = Cluster.builder().addContactPoints(contactPoints).withoutJMXReporting().withoutMetrics().withCredentials("cassandra","jph").build();
 
 		this.session = cluster.connect();
 
@@ -118,7 +118,7 @@ public class BankDao {
 			accountCustomers.put(row.getString("account_no"), row.getSet("customers", String.class));
 			
 			if (accountCustomers.size() % 10000==0){
-				logger.info(accountCustomers.size() + " loaded.");
+				// logger.info(accountCustomers.size() + " loaded.");
 			}
 		}
 		return accountCustomers;
@@ -137,7 +137,7 @@ public class BankDao {
 
 			long total = count.incrementAndGet();
 			if (total % 10000 == 0) {
-				logger.info("Total transactions processed : " + total);
+				// logger.info("Total transactions processed : " + total);
 			}
 		}
 	}
@@ -147,7 +147,7 @@ public class BankDao {
         String restDate = "T00:00:00Z";
         String cql = "select * from bank.transaction where solr_query = "
                 + "'cardnum:" + ccNo + " AND tranpostdt:[" + fromDate + restDate + " TO " + toDate + restDate + "]' limit  100";
-        logger.debug(cql);
+        // logger.debug(cql);
 
         ResultSet resultSet = this.session.execute(cql);
 
@@ -162,7 +162,7 @@ public class BankDao {
 		long total = count.incrementAndGet();
 
 		if (total % 10000 == 0) {
-			logger.info("Total transactions processed : " + total);
+			// logger.info("Total transactions processed : " + total);
 		}
 	}
 
@@ -194,20 +194,20 @@ public class BankDao {
 
 	public void addTagPreparedNoWork(String accountNo, Timestamp trandate, String transactionID, String tag) {
 		String tagSet = " tags + {'" + tag + "'} ";
-		logger.info("writing addTag update statement with tags set to "+ tagSet);
+		// logger.info("writing addTag update statement with tags set to "+ tagSet);
 		ResultSetFuture rs = this.session.executeAsync(this.addTransactionTag.bind(tagSet,accountNo,trandate,transactionID));
 
 		//  set tags = ? where account_no = ? and tranPostDt = ? and tranId = ?";
 	}
         public void addCustChange(String accountNo,String custid, String last_update) {
-		logger.info("writing addCustChange update statement");
+		// logger.info("writing addCustChange update statement");
 		ResultSetFuture rs = this.session.executeAsync(this.addCustomerChange.bind(accountNo,custid,last_update));
 	}
 	public void addTag(String accountNo, String trandate, String transactionID, String tag, String operation) {
 		String cql = "update " + transactionTable + " set tags = tags " + operation + "{'" + tag
 				+ "'} where account_no = '" + accountNo + "' and tranPostDt = '" + trandate
 		+ "'	 and tranId = '" + transactionID + "'";
-		logger.info("writing addTag update statement with cql =" + cql);
+		// logger.info("writing addTag update statement with cql =" + cql);
 		ResultSet rs = this.session.execute(cql);
 
 		//  set tags = ? where account_no = ? and tranPostDt = ? and tranId = ?";
@@ -218,7 +218,7 @@ public class BankDao {
 		long total = count.incrementAndGet();
 
 		if (total % 10000 == 0) {
-			logger.info("Total customers processed : " + total);
+			// logger.info("Total customers processed : " + total);
 		}
 	}
 	

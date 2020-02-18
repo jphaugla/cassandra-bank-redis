@@ -13,9 +13,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.datastax.banking.model.Account;
 import com.datastax.banking.model.Customer;
 import com.datastax.banking.model.Transaction;
@@ -23,7 +20,7 @@ import com.datastax.banking.service.BankService;
 
 public class BankGenerator {
 
-	private static final Logger logger = LoggerFactory.getLogger(BankGenerator.class);
+	// private static final Logger logger = LoggerFactory.getLogger(BankGenerator.class);
 	private static final int BASE = 1000000;
 	private static final int DAY_MILLIS = 1000 * 60 *60 * 24;
 	private static AtomicInteger customerIdGenerator = new AtomicInteger(1);

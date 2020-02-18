@@ -1,4 +1,4 @@
-package com.datastax.banking;
+package com.datastax.banking.service;
 
 import java.util.concurrent.BlockingQueue;
 
