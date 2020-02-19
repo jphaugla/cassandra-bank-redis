@@ -85,16 +85,18 @@ public class BankRedisDao  {
     }
     public List<String> getCustomerIdsbyPhone(String phoneString) {
         logger.warn("in bankredisdao.getCustomerIdsbyPhone with phone=" + phoneString);
-        Query q = new Query (phoneString).limitFields("phone");
-        SearchResult searchResult = custClient.search(q);
+        Query q = new Query ("@phone:" + phoneString);
+        setHost("localhost",6379);
+        SearchResult searchResult = createClient("customer").search(q);
         List<String> custidList = new ArrayList<String>();
         Long numDocs = searchResult.totalResults;
         logger.warn("after numdocs=", numDocs.toString());
         List<Document> ldoc = searchResult.docs;
         for(Document document : ldoc) {
-            custidList.add(document.toString());
+            custidList.add(document.getId());
+            logger.warn("adding to custid list string=" + document.getId());
         }
-        logger.warn("before return", numDocs.toString());
+        logger.warn("before return");
         return custidList;
     }
     public List<String> getCustomerIdsbyState(String state) {
