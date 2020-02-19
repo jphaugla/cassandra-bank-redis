@@ -104,27 +104,18 @@ public class BankService {
 		return dao.getTransactionsCTGDESC(mrchntctgdesc);
 	}
 
-	public String generateData() {
-		String noOfCustomersStr = PropertyHelper.getProperty("noOfCustomers", "10000");
-		String noOfTransactionsStr = PropertyHelper.getProperty("noOfTransactions", "10000");
-		String createStr = PropertyHelper.getProperty("create", "false");
-
-		int noOfDays = Integer.parseInt(PropertyHelper.getProperty("noOfDays", "180"));
+	public String generateData(Integer noOfCustomers, Integer noOfTransactions, Integer noOfDays,
+	Integer noOfThreads) {
 
 		BlockingQueue<Transaction> queue = new ArrayBlockingQueue<Transaction>(1000);
 		List<KillableRunner> tasks = new ArrayList<>();
 
 		//Executor for Threads
-		int noOfThreads = Integer.parseInt(PropertyHelper.getProperty("noOfThreads", "8"));
 		ExecutorService executor = Executors.newFixedThreadPool(noOfThreads);
 		redisDao.setHost("localhost", 6379);
 		redisDao.createCustomerSchema();
-		int noOfTransactions = Integer.parseInt(noOfTransactionsStr);
-		int noOfCustomers = Integer.parseInt(noOfCustomersStr);
-		boolean create = Boolean.parseBoolean(createStr);
-		if (create){
-			createCustomerAccount(noOfCustomers, dao, redisDao);
-		}
+
+		createCustomerAccount(noOfCustomers, dao, redisDao);
 
 		for (int i = 0; i < noOfThreads; i++) {
 

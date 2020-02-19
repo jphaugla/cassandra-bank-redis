@@ -44,16 +44,20 @@ public class BankingWS {
 		logger.debug("IN get customerByPhone with phone as " + phoneString);
 		return bankService.getCustomerByPhone(phoneString);
 	}
+
 	@GetMapping("/customerByState")
 
 	public List<Customer> getCustomerByState(@RequestParam String state) {
 		logger.debug("IN get customerByState with state as " + state);
 		return bankService.getCustomerByState(state);
 	}
-	@RequestMapping("/generateData")
-	public String generateData() {
 
-		bankService.generateData();
+	@GetMapping("/generateData")
+	@ResponseBody
+	public String generateData (@RequestParam Integer noOfCustomers, @RequestParam Integer noOfTransactions, @RequestParam Integer noOfDays,
+				   @RequestParam Integer noOfThreads) {
+
+		bankService.generateData(noOfCustomers, noOfTransactions, noOfDays, noOfThreads);
 
 		return "Done";
 	}

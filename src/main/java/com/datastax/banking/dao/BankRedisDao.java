@@ -50,12 +50,17 @@ public class BankRedisDao  {
     }
 
     public boolean createCustomerSchema() {
+        if (portNo>0) {
+            setHost("localhost",6379);
+            createClient("customer").dropIndex(true);
+        }
         Schema schema = new Schema().addTextField("city", 1.0)
                 .addTextField("state_abbreviation", 1.0)
                 .addTextField("email_address", 1.0)
                 .addTextField("last_name", 1.0)
                 .addTextField("first_name", 1.0)
-                .addTextField("zipcode", 1.0);
+                .addTextField("zipcode", 1.0)
+                .addTextField("phone",1.0);
         //   this is creating the index returning the index
         return createClient("customer").createIndex(schema, io.redisearch.client.Client.IndexOptions.Default());
     }
