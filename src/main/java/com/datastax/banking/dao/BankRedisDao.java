@@ -90,7 +90,7 @@ public class BankRedisDao  {
         SearchResult searchResult = createClient("customer").search(q);
         List<String> custidList = new ArrayList<String>();
         Long numDocs = searchResult.totalResults;
-        logger.warn("after numdocs=", numDocs.toString());
+        logger.warn("after numdocs=" + numDocs.toString());
         List<Document> ldoc = searchResult.docs;
         for(Document document : ldoc) {
             custidList.add(document.getId());
@@ -103,9 +103,9 @@ public class BankRedisDao  {
         logger.warn("in bankredisdao.getCustomerIdsbyPhone with phone=" + phoneString);
         return (returnCustomerIDsfromQuery("@phone:" + phoneString));
     }
-    public List<String> getCustomerIdsbyState(String state) {
-        logger.warn("in bankredisdao.getCustomerIdsbyState with state=" + state);
-        return (returnCustomerIDsfromQuery("@state:" + state));
+    public List<String> getCustomerIdsbyStateCity(String state, String city) {
+        logger.warn("in bankredisdao.getCustomerIdsbyState with state=" + state + " and city=" + city);
+        return (returnCustomerIDsfromQuery("@state_abbreviation:" + state +  " @city:" + city));
     }
     public List<String> getCustomerByFullNamePhone(String fullName, String phone) {
         logger.warn("in bankredisdao.getCustomerByFullNamePhone with fullName=" + fullName + " and phone=" + phone);
@@ -114,6 +114,10 @@ public class BankRedisDao  {
     public List<String> getCustomerIdsbyEmail(String email) {
         logger.warn("in bankredisdao.getCustomerIdsbyEmail with email=" + email );
         return (returnCustomerIDsfromQuery("@email_address:" + email.replace("@", "\\@")));
+    }
+    public List<String> getCustomerIdsbyZipcodeLastname(String zipcode, String last_name) {
+        logger.warn("in bankredisdao.getCustomerIdsbyZipcodeLastname with zipcode=" + zipcode + " last_name=" + last_name);
+        return (returnCustomerIDsfromQuery("@zipcode:" + zipcode + " @last_name:" + last_name));
     }
 
 }

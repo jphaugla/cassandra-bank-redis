@@ -59,8 +59,13 @@ public class BankService {
 		return dao.getCustomerListFromIDs(customerIDList);
 	}
 
-	public List<Customer> getCustomerByState(String state){
-		List<String> customerIDList = redisDao.getCustomerIdsbyState(state);
+	public List<Customer> getCustomerByStateCity(String state, String city){
+		List<String> customerIDList = redisDao.getCustomerIdsbyStateCity(state, city);
+		return dao.getCustomerListFromIDs(customerIDList);
+	}
+
+	public List<Customer> getCustomerIdsbyZipcodeLastname(String zipcode, String last_name){
+		List<String> customerIDList = redisDao.getCustomerIdsbyZipcodeLastname(zipcode, last_name);
 		return dao.getCustomerListFromIDs(customerIDList);
 	}
 

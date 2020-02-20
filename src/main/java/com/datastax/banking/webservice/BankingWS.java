@@ -5,8 +5,6 @@ import com.datastax.banking.model.Customer;
 import com.datastax.banking.model.Transaction;
 import com.datastax.banking.service.BankService;
 
-import com.datastax.demo.utils.KillableRunner;
-import com.datastax.demo.utils.PropertyHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 @RestController
@@ -47,9 +41,15 @@ public class BankingWS {
 
 	@GetMapping("/customerByState")
 
-	public List<Customer> getCustomerByState(@RequestParam String state) {
-		logger.debug("IN get customerByState with state as " + state);
-		return bankService.getCustomerByState(state);
+	public List<Customer> getCustomerByStateCity(@RequestParam String state, @RequestParam String city) {
+		logger.debug("IN get customerByState with state as " + state + " and city=" + city);
+		return bankService.getCustomerByStateCity(state, city);
+	}
+	@GetMapping("/customerByZipcodeLastname")
+
+	public List<Customer> getCustomerIdsbyZipcodeLastname(@RequestParam String zipcode, @RequestParam String lastname) {
+		logger.debug("IN get getCustomerIdsbyZipcodeLastname with zipcode as " + zipcode + " and lastname=" + lastname);
+		return bankService.getCustomerIdsbyZipcodeLastname(zipcode, lastname);
 	}
 
 	@GetMapping("/generateData")

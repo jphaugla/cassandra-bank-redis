@@ -312,8 +312,8 @@ public class BankDao {
 		t.setcardNum(row.getString("cardNum"));
 		t.setaccountType(row.getString("account_type"));
 		t.setamountType(row.getString("amount_type"));
-		t.setAddress_type(row.getString("address_type"));
 		t.setAmount(row.getDouble("amount"));
+		/* t.setAddress_type(row.getString("address_type"));
 		t.setFirst_name(row.getString("first_name"));
 		t.setFull_name(row.getString("full_name"));
 		t.setLast_name(row.getString("last_name"));
@@ -326,6 +326,7 @@ public class BankDao {
 		t.setstate_abbreviation(row.getString("state_abbreviation"));
 		t.setzipcode(row.getString("zipcode"));
 		t.setzipcode4(row.getString("zipcode4"));
+		 */
 		t.setmerchantCtgyDesc(row.getString("merchantCtgyDesc"));
 		t.setmerchantCtygCd(row.getString("merchantCtygCd"));
 		t.setorigTranAmt(row.getString("origTranAmt"));
