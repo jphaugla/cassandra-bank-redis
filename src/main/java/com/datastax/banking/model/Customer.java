@@ -142,6 +142,18 @@ public class Customer {
 		}
 		return onlyNumbers;
 	}
+	public List<String> retrieveAllEmails() {
+		List<Email> listEmails =  getEmail_address();
+		List<String> onlyEmail = new ArrayList<String> ();
+		for (Email email : listEmails) {
+			onlyEmail.add(email.retrieveEscapedEmail_address());
+		}
+		return onlyEmail;
+	}
+
+	public String retrieveStringOfEmails() {
+		return String.join(";", this.retrieveAllEmails());
+	};
 
 	public String retrieveStringOfPhones() {
 		String onlyNumbers = String.join(";", this.retrieveAllPhones());
@@ -170,7 +182,7 @@ public class Customer {
 	public String getcustomer_nbr() {
 		return this.customer_nbr;
 	}
-	 public void setcustomer_nbr(String input_cust) {
+	public void setcustomer_nbr(String input_cust) {
 		this.customer_nbr = input_cust;
 	}
 	public String getcustomer_origin_system() {

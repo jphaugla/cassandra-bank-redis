@@ -62,6 +62,21 @@ public class BankingWS {
 		return "Done";
 	}
 
+	@GetMapping("/customerByFullNamePhone")
+
+	public List<Customer> getCustomerByFullNamePhone(@RequestParam String fullName, @RequestParam String phone) {
+		logger.debug("IN get getCustomerByFullNamePhone with fullName as " + fullName + " and phone=" + phone);
+		return bankService.getCustomerByFullNamePhone(fullName, phone);
+	}
+
+	@GetMapping("/customerByEmail")
+
+	public List<Customer> customerByEmail(@RequestParam String email) {
+		logger.debug("In get customerByEmail with email as " + email);
+		return bankService.getCustomerByEmail(email);
+	}
+
+
 	/*
 	@GET
 	@Path("/get/getcctransactions/{creditcardno}/{from}/{to}")
@@ -109,28 +124,6 @@ public class BankingWS {
 		return "<h2>Updated " + msg + "</h2>";
 	}
 
-	@POST
-	@Path("custChange")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Produces(MediaType.TEXT_HTML)
-	public String postTagMethod(@FormParam("accountNo") String accountNo, 
-								@FormParam("customerId") String custID,
-@FormParam("chgdate") String chgdate )
-								 {
-		String msg = "Customer change where custID= " + custID  + " accountNo=" + accountNo + " chgdate=" + chgdate ;
-
-		bankService.addCustChange(accountNo,custID,chgdate);
-		return "<h2>Updated " + msg + "</h2>";
-	}
-	@POST
-	@Path("post")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Produces(MediaType.TEXT_HTML)
-	public String postMethod(@FormParam("name") String name) {
-		return "<h2>Hello, " + name + "</h2>";
-	}
-
-
 	@GET
 	@Path("/get/getcctransactionsTag/{creditcardno}/{from}/{to}/{tag}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -155,27 +148,6 @@ public class BankingWS {
 		return Response.status(Status.OK).entity(result).build();
 	}
 
-
-	@GET
-	@Path("/get/customerByFullNamePhone/{fullName}/{phoneString}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getCustomerByFullNamePhone(@PathParam("fullName") String fullName,
-											   @PathParam("phoneString") String phoneString) {
-
-		List<Customer> customers = bankService.getCustomerByFullNamePhone(fullName,phoneString);
-
-		return Response.status(Status.OK).entity(customers).build();
-	}
-
-	@GET
-	@Path("/get/customerByEmail/{emailString}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getCustomerByEmail(@PathParam("emailString") String emailString) {
-
-		List<Customer> customers = bankService.getCustomerByEmail(emailString);
-
-		return Response.status(Status.OK).entity(customers).build();
-	}
 	@GET
 	@Path("/get/accounts/{customerid}")
 	@Produces(MediaType.APPLICATION_JSON)

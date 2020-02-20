@@ -16,6 +16,7 @@ public class Email {
     public String getEmail_address() {
         return email_address;
     }
+    public String retrieveEscapedEmail_address() {return getEmail_address().replace("@","\\@"); }
     public void setEmail_address(String email_address) {
         this.email_address = email_address;
     }

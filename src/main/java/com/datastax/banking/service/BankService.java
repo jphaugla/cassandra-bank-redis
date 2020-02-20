@@ -58,19 +58,20 @@ public class BankService {
 		logger.warn("after call to rediDao getCustByPhone" + customerIDList.size());
 		return dao.getCustomerListFromIDs(customerIDList);
 	}
+
 	public List<Customer> getCustomerByState(String state){
-		logger.warn("in bankservice getCustByState with state=" + state);
 		List<String> customerIDList = redisDao.getCustomerIdsbyState(state);
-		logger.warn("after call to rediDao getCustByState " + customerIDList.size());
 		return dao.getCustomerListFromIDs(customerIDList);
 	}
-	public List<Customer> getCustomerByFullNamePhone(String fullName, String phoneString){
 
-		return dao.getCustomerByFullNamePhone(fullName, phoneString);
+	public List<Customer> getCustomerByEmail(String email){
+		List<String> customerIDList = redisDao.getCustomerIdsbyEmail(email);
+		return dao.getCustomerListFromIDs(customerIDList);
 	}
-	public List<Customer> getCustomerByEmail(String emailString){
 
-		return dao.getCustomerByEmail(emailString);
+	public List<Customer> getCustomerByFullNamePhone(String fullName, String phoneString){
+		List<String> customerIDList = redisDao.getCustomerByFullNamePhone(fullName, phoneString);
+		return dao.getCustomerListFromIDs(customerIDList);
 	}
 		
 	public List<Account> getAccounts(String customerId){

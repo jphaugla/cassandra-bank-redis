@@ -74,18 +74,18 @@ public class BankRedisDao  {
         Map<String, Object> fields = new HashMap<>();
         fields.put("city", customer.getCity());
         fields.put("state_abbreviation", customer.getstate_abbreviation());
-        fields.put("email_address", customer.getEmail_address());
+        fields.put("email_address", customer.retrieveStringOfEmails()   );
         fields.put("last_name", customer.getLast_name());
         fields.put("first_name", customer.getFirstName());
         fields.put("zipcode", customer.getzipcode());
         fields.put("phone", customer.retrieveStringOfPhones());
+        fields.put("full_name", customer.getfull_name());
         custClient.addDocument(new Document(customer.getCustomerId(), fields), new AddOptions());
         Map<String, Object> info = custClient.getInfo();
         return Integer.parseInt((String) info.get("num_docs"));
     }
-    public List<String> getCustomerIdsbyPhone(String phoneString) {
-        logger.warn("in bankredisdao.getCustomerIdsbyPhone with phone=" + phoneString);
-        Query q = new Query ("@phone:" + phoneString);
+    public List<String> returnCustomerIDsfromQuery(String QueryString) {
+        Query q = new Query (QueryString);
         setHost("localhost",6379);
         SearchResult searchResult = createClient("customer").search(q);
         List<String> custidList = new ArrayList<String>();
@@ -99,21 +99,21 @@ public class BankRedisDao  {
         logger.warn("before return");
         return custidList;
     }
+    public List<String> getCustomerIdsbyPhone(String phoneString) {
+        logger.warn("in bankredisdao.getCustomerIdsbyPhone with phone=" + phoneString);
+        return (returnCustomerIDsfromQuery("@phone:" + phoneString));
+    }
     public List<String> getCustomerIdsbyState(String state) {
         logger.warn("in bankredisdao.getCustomerIdsbyState with state=" + state);
-        Query q = new Query ("@state_abbreviation:" + state);
-        // Query q = new Query (state).limitFields("state_abbreviation");
-        setHost("localhost",6379);
-        SearchResult searchResult = createClient("customer").search(q);
-        List<String> custidList = new ArrayList<String>();
-        Long numDocs = searchResult.totalResults;
-        logger.warn("after numdocs=" + numDocs);
-        List<Document> ldoc = searchResult.docs;
-        for(Document document : ldoc) {
-            custidList.add(document.getId());
-            logger.warn("adding to custid list string=" + document.getId());
-        }
-        logger.warn("before return");
-        return custidList;
+        return (returnCustomerIDsfromQuery("@state:" + state));
     }
+    public List<String> getCustomerByFullNamePhone(String fullName, String phone) {
+        logger.warn("in bankredisdao.getCustomerByFullNamePhone with fullName=" + fullName + " and phone=" + phone);
+        return (returnCustomerIDsfromQuery("@full_name:" + fullName + " @phone:" + phone));
+    }
+    public List<String> getCustomerIdsbyEmail(String email) {
+        logger.warn("in bankredisdao.getCustomerIdsbyEmail with email=" + email );
+        return (returnCustomerIDsfromQuery("@email_address:" + email.replace("@", "\\@")));
+    }
+
 }
