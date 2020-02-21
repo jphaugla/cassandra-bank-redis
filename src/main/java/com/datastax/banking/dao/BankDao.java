@@ -2,15 +2,9 @@ package com.datastax.banking.dao;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.datastax.banking.dao.BankRedisDao;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +24,8 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.MappingManager;
 import com.datastax.driver.mapping.Result;
-import com.datastax.driver.mapping.Mapper.Option;
 
 import static com.datastax.driver.mapping.Mapper.Option.saveNullFields;
-import static com.datastax.driver.mapping.Mapper.Option.tracing;
 
 /**
  * Inserts into 2 tables
@@ -56,6 +48,8 @@ public class BankDao {
 
 	private static final String GET_TRANSACTIONS_BY_TIMES = "select * from " + transactionTable
 			+ " where account_no = ? and tranPostDt >= ? and tranPostDt < ?";
+	private static final String GET_TRANSACTIONS_BY_KEYS = "select * from " + transactionTable
+			+ " where account_no = ? and tranPostDt = ? and tranId = ?";
 	private static final String GET_TRANSACTIONS_SINCE = "select * from " + transactionTable
 			+ " where account_no = ? and tranPostDt >= ?";
 	private static final String GET_ALL_ACCOUNT_CUSTOMERS = "select * from " + accountsTable;
@@ -66,7 +60,7 @@ public class BankDao {
 	private SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 	
 	private PreparedStatement getTransactionByAccountId;
-	// private PreparedStatement getTransactionByMsgDesc;
+	private PreparedStatement getTransactionByKeys;
 	private PreparedStatement getTransactionBetweenTimes;
 	private PreparedStatement getTransactionSinceTime;
 	private PreparedStatement addTransactionTag;
@@ -80,6 +74,7 @@ public class BankDao {
 	private Mapper<Customer> customerMapper;
 	private Mapper<Account> accountMapper;
 	private Mapper<Transaction> transactionMapper;
+	private static final Logger logger = LoggerFactory.getLogger(BankDao.class);
 
 
 	
@@ -90,9 +85,10 @@ public class BankDao {
 
 		this.session = cluster.connect();
 
+
 		this.getTransactionByAccountId = session.prepare(GET_TRANSACTIONS_BY_ID);
-	//	this.getTransactionByMsgDesc = session.prepare(GET_TRANSACTIONS_BY_MSGDESC);
 		this.getTransactionBetweenTimes = session.prepare(GET_TRANSACTIONS_BY_TIMES);
+		this.getTransactionByKeys = session.prepare(GET_TRANSACTIONS_BY_KEYS);
 		this.getTransactionSinceTime = session.prepare(GET_TRANSACTIONS_SINCE);
 		this.getAccountCustomers = session.prepare(GET_ALL_ACCOUNT_CUSTOMERS);
 		this.getCustomerAccounts = session.prepare(GET_CUSTOMER_ACCOUNTS);
@@ -118,7 +114,7 @@ public class BankDao {
 			accountCustomers.put(row.getString("account_no"), row.getSet("customers", String.class));
 			
 			if (accountCustomers.size() % 10000==0){
-				// logger.info(accountCustomers.size() + " loaded.");
+				logger.info(accountCustomers.size() + " loaded.");
 			}
 		}
 		return accountCustomers;
@@ -128,19 +124,8 @@ public class BankDao {
 		insertTransactionAsync(transaction);
 	}
 
-	public void insertTransactionsAsync(List<Transaction> transactions) {
 
-		
-		for (Transaction transaction : transactions) {
-			checkBucketForTransaction(transaction);
-			transactionMapper.save(transaction);
 
-			long total = count.incrementAndGet();
-			if (total % 10000 == 0) {
-				// logger.info("Total transactions processed : " + total);
-			}
-		}
-	}
     public List<Transaction> getTransactionsForCCNoDateSolr(String ccNo,Set<String> tags, DateTime from, DateTime to) {
         String fromDate = from.toString("yyyy-MM-dd");
         String toDate = to.toString("yyyy-MM-dd");
@@ -162,7 +147,7 @@ public class BankDao {
 		long total = count.incrementAndGet();
 
 		if (total % 10000 == 0) {
-			// logger.info("Total transactions processed : " + total);
+			logger.info("Total transactions processed : " + total);
 		}
 	}
 
@@ -178,6 +163,7 @@ public class BankDao {
 		
 		return this.processResultSet(rs.getUninterruptibly(), null);
 	}
+
 	public List<Transaction> getTransactionsCTGDESC(String mrchntctgdesc) {
 
 		//  String solrquery = "merchantctgydesc:" + mrchntctgdesc;
@@ -199,7 +185,7 @@ public class BankDao {
 
 		//  set tags = ? where account_no = ? and tranPostDt = ? and tranId = ?";
 	}
-        public void addCustChange(String accountNo,String custid, String last_update) {
+	public void addCustChange(String accountNo,String custid, String last_update) {
 		// logger.info("writing addCustChange update statement");
 		ResultSetFuture rs = this.session.executeAsync(this.addCustomerChange.bind(accountNo,custid,last_update));
 	}
@@ -218,7 +204,7 @@ public class BankDao {
 		long total = count.incrementAndGet();
 
 		if (total % 10000 == 0) {
-			// logger.info("Total customers processed : " + total);
+			logger.info("Total customers processed : " + total);
 		}
 	}
 	
@@ -233,34 +219,33 @@ public class BankDao {
 		}
 		return customerList;
 	};
+	public List<Transaction> getTransactionsfromDelimitedKey(List<String> ConcatTransId) {
+		List<Transaction> tranlist= new ArrayList<>();
+		for (String transID: ConcatTransId) {
+			String[] keys = transID.split(":");
+			String account_no = keys[0];
+			Long timestamp = Long.parseLong(keys[1]);
+			String tranid = keys[2];
+			logger.warn("bankDao.getTransactionsfromDelimitedKey account=" + account_no + " timestamp=" + keys[1] + " tranid=" + tranid);
+			Date timeDate = new Date(timestamp);
+			SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+			logger.warn("this is the date " + sdf.format(timeDate));
+			ResultSet rs = this.session.execute(this.getTransactionByKeys.bind(account_no, timeDate, Integer.parseInt(tranid)));
 
-	public List<Customer> getCustomerByPhone(String phoneString) {
+			Result<Transaction> transactions = transactionMapper.map(rs);
+			tranlist.add(transactions.one());
 
-		String cql = "select * from bank.customer where solr_query = '{!tuple}phone_numbers.phone_number:" + phoneString + "'";
+		}
+		return tranlist;
+		/*
+		ResultSet results = session.execute(getCustomerAccounts.bind(customerId));
 
-		ResultSet resultSet = this.session.execute(cql);
+		Result<Account> accounts = accountMapper.map(results);
 
-		return processCustResultSet(resultSet);
+		return accounts.all();
+		 */
 	}
 
-    public List<Customer> getCustomerByFullNamePhone(String Fullname, String phoneString) {
-
-        String cql = "select * from bank.customer where solr_query = " +
-                "'full_name:" + Fullname + " AND {!tuple}phone_numbers.phone_number:" + phoneString + "'";
-
-        ResultSet resultSet = this.session.execute(cql);
-
-        return processCustResultSet(resultSet);
-    }
-
-    public List<Customer> getCustomerByEmail(String emailString) {
-
-        String cql = "select * from bank.customer where solr_query = '{!tuple}email_address.email_address:" + emailString + "'";
-
-        ResultSet resultSet = this.session.execute(cql);
-
-        return processCustResultSet(resultSet);
-    }
 
 	private Customer	rowToCustomer(Row row) {
 		Customer c = new Customer();
@@ -306,27 +291,13 @@ public class BankDao {
 
 		t.setAccountNo(row.getString("account_no"));
 		t.setMerchant(row.getString("merchantname"));
-		t.setTransactionId(row.getString("tranid"));
+		t.setTransactionId(row.getInt("tranid"));
 		t.setTransactionTime(row.getTimestamp("tranPostDt"));
 		t.setTags(row.getSet("tags", String.class));
 		t.setcardNum(row.getString("cardNum"));
 		t.setaccountType(row.getString("account_type"));
 		t.setamountType(row.getString("amount_type"));
 		t.setAmount(row.getDouble("amount"));
-		/* t.setAddress_type(row.getString("address_type"));
-		t.setFirst_name(row.getString("first_name"));
-		t.setFull_name(row.getString("full_name"));
-		t.setLast_name(row.getString("last_name"));
-		t.setmiddle_name(row.getString("middle_name"));
-		t.setCity(row.getString("city"));
-		t.setCountry_code(row.getString("country_code"));
-		t.setCountry_name(row.getString("country_name"));
-		t.setAddress_line1(row.getString("address_line1"));
-		t.setAddress_line2(row.getString("address_line2"));
-		t.setstate_abbreviation(row.getString("state_abbreviation"));
-		t.setzipcode(row.getString("zipcode"));
-		t.setzipcode4(row.getString("zipcode4"));
-		 */
 		t.setmerchantCtgyDesc(row.getString("merchantCtgyDesc"));
 		t.setmerchantCtygCd(row.getString("merchantCtygCd"));
 		t.setorigTranAmt(row.getString("origTranAmt"));

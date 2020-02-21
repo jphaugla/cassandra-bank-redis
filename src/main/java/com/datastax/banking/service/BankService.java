@@ -1,24 +1,23 @@
 package com.datastax.banking.service;
 
+import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
-
-import com.datastax.banking.service.TransactionWriter;
 import com.datastax.banking.dao.BankDao;
 import com.datastax.banking.dao.BankRedisDao;
 import com.datastax.banking.data.BankGenerator;
 import com.datastax.banking.model.Account;
 import com.datastax.banking.model.Customer;
-import com.datastax.banking.model.Email;
+
 import com.datastax.banking.model.Transaction;
-import com.datastax.banking.webservice.BankingWS;
+
 import com.datastax.demo.utils.KillableRunner;
 import com.datastax.demo.utils.PropertyHelper;
-import com.datastax.demo.utils.ThreadUtils;
+
 import com.datastax.demo.utils.Timer;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -63,6 +62,11 @@ public class BankService {
 		List<String> customerIDList = redisDao.getCustomerIdsbyStateCity(state, city);
 		return dao.getCustomerListFromIDs(customerIDList);
 	}
+
+	public List<Transaction> getMerchantTransactions(String merchant, String account, String to, String from) throws ParseException {
+		List<String> transactionKey = redisDao.getMerchantTransactions(merchant, account, to, from);
+		return dao.getTransactionsfromDelimitedKey(transactionKey);
+	};
 
 	public List<Customer> getCustomerIdsbyZipcodeLastname(String zipcode, String last_name){
 		List<String> customerIDList = redisDao.getCustomerIdsbyZipcodeLastname(zipcode, last_name);
@@ -120,12 +124,13 @@ public class BankService {
 		ExecutorService executor = Executors.newFixedThreadPool(noOfThreads);
 		redisDao.setHost("localhost", 6379);
 		redisDao.createCustomerSchema();
+		redisDao.createTransactionSchema();
 
 		createCustomerAccount(noOfCustomers, dao, redisDao);
 
 		for (int i = 0; i < noOfThreads; i++) {
 
-			KillableRunner task = new TransactionWriter(dao, queue);
+			KillableRunner task = new TransactionWriter(dao, redisDao, queue);
 			executor.execute(task);
 			tasks.add(task);
 		}
@@ -139,7 +144,7 @@ public class BankService {
 		for (int i = 0; i < totalTransactions; i++) {
 
 			try{
-				Transaction randomTransaction = BankGenerator.createRandomTransaction(noOfDays, noOfCustomers, BankService.getInstance());
+				Transaction randomTransaction = BankGenerator.createRandomTransaction(noOfDays, noOfCustomers, BankService.getInstance(), i);
 				if (randomTransaction!=null){
 					queue.put(randomTransaction);
 				}
@@ -151,44 +156,7 @@ public class BankService {
 				sleep(10);
 			}
 		}
-		timer.end();
-		Random r = new Random();
-
-		while(true){
-			try{
-				Transaction randomTransaction = BankGenerator.createRandomTransaction(new DateTime(), noOfCustomers, BankService.getInstance());
-				if (randomTransaction!=null){
-					queue.put(randomTransaction);
-				}
-				sleep(new Double(Math.random()*20).intValue());
-
-				double d = r.nextGaussian()*-1d;
-				int test = new Double(Math.random()*10).intValue();
-
-				if (d*test < 1){
-					int someNumber = new Double(Math.random()*10).intValue();
-
-					for (int i=0; i < someNumber; i++){
-						randomTransaction = BankGenerator.createRandomTransaction(new DateTime(), noOfCustomers, BankService.getInstance());
-						if (randomTransaction!=null){
-							queue.put(randomTransaction);
-						}
-
-						if (new Double(Math.random()*100).intValue() > 2){
-							sleep(new Double(Math.random()*100).intValue());
-						}
-					}
-				}
-
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				break;
-			}
-		}
-
-		ThreadUtils.shutdown(tasks, executor);
-
-		System.exit(0);
+		logger.info("Finished writing " + totalTransactions);
 		return "Done";
 	}
 

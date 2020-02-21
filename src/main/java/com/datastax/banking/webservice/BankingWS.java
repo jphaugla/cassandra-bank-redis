@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.text.ParseException;
 import java.util.List;
 
 
@@ -76,8 +76,23 @@ public class BankingWS {
 		return bankService.getCustomerByEmail(email);
 	}
 
+	@GetMapping("/merchantTransactions")
 
+	public List<Transaction> getMerchantTransactions(@RequestParam String merchant, @RequestParam String account,
+											  @RequestParam String from, @RequestParam String to) throws ParseException {
+		logger.debug("In getMerchantTransactions merchant=" + merchant + " account=" + account + " to=" + to + " from=" + from);
+		return bankService.getMerchantTransactions(merchant, account, to, from);
+	}
 	/*
+	@GET
+	@Path("/get/categorydescrip/{mrchntctgdesc}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getTransactionsCTGDESC(@PathParam("mrchntctgdesc") String mrchntctgdesc) {
+
+		List<Transaction> transactions = bankService.getTransactionsCTGDESC(mrchntctgdesc);
+
+		return Response.status(Status.OK).entity(transactions).build();
+	}
 	@GET
 	@Path("/get/getcctransactions/{creditcardno}/{from}/{to}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -167,15 +182,7 @@ public class BankingWS {
 		
 		return Response.status(Status.OK).entity(transactions).build();
 	}
-	@GET
-	@Path("/get/categorydescrip/{mrchntctgdesc}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getTransactionsCTGDESC(@PathParam("mrchntctgdesc") String mrchntctgdesc) {
 
-		List<Transaction> transactions = bankService.getTransactionsCTGDESC(mrchntctgdesc);
-
-		return Response.status(Status.OK).entity(transactions).build();
-	}
 
  */
 

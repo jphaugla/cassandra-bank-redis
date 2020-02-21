@@ -15,31 +15,19 @@ public class Transaction {
 	@Column(name = "account_no")
 	private String accountNo;
 
-	@ClusteringColumn
+	@ClusteringColumn(0)
 	@Column(name = "tranPostDt")
 	private Date transactionTime;
-
+	@ClusteringColumn(1)
 	@Column(name = "tranId")
-	private String transactionId;
+	private Integer transactionId;
 	@Column(name = "account_type")
 	private String accountType;
 	@Column(name = "amount_type")
 	private String amountType;
+
 	private Double	amount;
 	private String	cardNum;
-	private String	first_name;
-	private String	full_name;
-	private String	last_name;
-	private String	middle_name;
-	private String	city;
-	private String	country_code;
-	private String	country_name;
-	private String	address_line1;
-	private String	address_line2;
-	private String	address_type;
-	private String	state_abbreviation;
-	private String	zipcode;
-	private String	zipcode4;
 	private String	merchantCtygCd;
 	private String	merchantCtgyDesc;
 	@Column(name = "merchantname")
@@ -101,11 +89,11 @@ public class Transaction {
 		this.transactionTime = transactionTime;
 	}
 
-	public String getTransactionId() {
+	public Integer getTransactionId() {
 		return transactionId;
 	}
 
-	public void setTransactionId(String transactionId) {
+	public void setTransactionId(Integer transactionId) {
 		this.transactionId = transactionId;
 	}
 
@@ -147,105 +135,6 @@ public class Transaction {
 
 	public void setBucket(String bucket) {
 		this.bucket = bucket;
-	}
-	// customer columns
-	public String getAddress_line1() {
-		return address_line1;
-	}
-	public void setAddress_line1(String address_line1) {
-		this.address_line1 = address_line1;
-	}
-	public String getAddress_line2() {
-		return address_line2;
-	}
-	public void setAddress_line2(String address_line2) {
-		this.address_line2 = address_line2;
-	}
-	public String getAddress_type() {
-		return address_type;
-	}
-	public void setAddress_type(String address_type) {
-		this.address_type = address_type;
-	}
-	public String getCity() {
-		return city;
-	}
-	public void setCity(String city) {
-		this.city = city;
-	}
-	public String getCountry_code() {
-		return country_code;
-	}
-	public void setCountry_code(String country_code) {
-		this.country_code = country_code;
-	}
-	public String getCountry_name() {
-		return country_name;
-	}
-	public void setCountry_name(String country_name) {
-		this.country_name = country_name;
-	}
-	public String getFull_name() {
-		return full_name;
-	}
-	public void setFull_name(String full_name) {
-		this.full_name = full_name;
-	}
-	public String getFirst_name() {
-		return first_name;
-	}
-	public void setFirst_name(String first) {
-		this.first_name = first;
-	}
-	public String getLast_name() {
-		return last_name;
-	}
-	public void setLast_name(String last_name) {
-		this.last_name = last_name;
-	}
-	public String getmiddle_name() {
-		return this.middle_name;
-	}
-	public void setmiddle_name(String middleName) {
-		this.middle_name = middleName;
-	}
-
-	public String getstate_abbreviation() {
-		return this.state_abbreviation;
-	}
-	public void setstate_abbreviation(String state_abbreviation) {
-		this.state_abbreviation = state_abbreviation;
-	}
-	public String getzipcode() {
-		return this.zipcode;
-	}
-	public void setzipcode(String zipcode) {
-		this.zipcode = zipcode;
-	}
-	public String getZipcode4() {
-		return this.zipcode4;
-	}
-	public void setzipcode4(String zipcode4) {
-		this.zipcode4 = zipcode4;
-	}
-
-	public void defineAllAccountColumns(Account account) {
-		if (account != null) {
-			this.first_name = account.getFirst_name();
-			this.last_name = account.getLast_name();
-			this.middle_name = account.getmiddle_name();
-			this.full_name = account.getFull_name();
-			this.address_line1 = account.getAddress_line1();
-			this.address_line2 = account.getAddress_line2();
-			this.city = account.getCity();
-			this.address_type = account.getAddress_type();
-			this.country_code = account.getCountry_code();
-			this.country_name = account.getCountry_name();
-			this.state_abbreviation = account.getstate_abbreviation();
-			this.zipcode = account.getzipcode();
-			this.zipcode4 = account.getZipcode4();
-			this.accountNo = account.getAccountNo();
-		}
 	}
 
 	public enum Status {

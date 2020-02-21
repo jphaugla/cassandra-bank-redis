@@ -120,7 +120,7 @@ public class BankGenerator {
 			
 			Account account = new Account();
 			account.defineAllCustomerColumns(customer);
-			String accountNumber = UUID.randomUUID().toString();
+			String accountNumber = "Acct" + Integer.toString(i);
 			account.setAccountNo(accountNumber);
 			account.setAccountType(accountTypes.get(i));
 			account.setCountry_name("USA");
@@ -143,18 +143,16 @@ public class BankGenerator {
 		}
 		
 		return accounts;
-	}	
-	
-	public static Transaction createRandomTransaction(int noOfDays, int noOfCustomers, BankService bankService) {
+	}
+	public static Transaction createRandomTransaction(int noOfDays, int noOfCustomers, BankService bankService, Integer idx) {
 
 		int noOfMillis = noOfDays * DAY_MILLIS;
-		// create time by adding a random no of millis 
+		// create time by adding a random no of millis
 		DateTime newDate = date.plusMillis(new Double(Math.random() * noOfMillis).intValue() + 1);
-		
-		return createRandomTransaction(newDate, noOfCustomers, bankService);
-	}
 
-	public static Transaction createRandomTransaction(DateTime newDate, int noOfCustomers, BankService bankService) {
+		return createRandomTransaction(newDate, noOfCustomers, bankService, idx);
+	}
+	public static Transaction createRandomTransaction(DateTime newDate, int noOfCustomers, BankService bankService, Integer idx) {
 
 		//Random account	
 		String customerId = getRandomCustomerId(noOfCustomers);
@@ -195,12 +193,11 @@ public class BankGenerator {
 		createItemsAndAmount(noOfItems, transaction);
 		transaction.setAccountNo(account.getAccountNo());
 		transaction.setMerchant(issuer);
-		transaction.setTransactionId(UUID.randomUUID().toString());
+		transaction.setTransactionId(idx);
         transaction.setcardNum( UUID.randomUUID().toString());
 		transaction.setTransactionTime(aNewDate);
 		transaction.setLocation(location);
 		transaction.setTags(tags);
-		transaction.defineAllAccountColumns(account);
 		if(randomLocation<5) {
             transaction.setamountType("Debit");
         }
