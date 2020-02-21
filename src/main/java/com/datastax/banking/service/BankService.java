@@ -68,6 +68,11 @@ public class BankService {
 		return dao.getTransactionsfromDelimitedKey(transactionKey);
 	};
 
+	public List<Transaction> getCreditCardTransactions(String creditCard, String account, String to, String from) throws ParseException {
+		List<String> transactionKey = redisDao.getCreditCardTransactions(creditCard, account, to, from);
+		return dao.getTransactionsfromDelimitedKey(transactionKey);
+	};
+
 	public List<Customer> getCustomerIdsbyZipcodeLastname(String zipcode, String last_name){
 		List<String> customerIDList = redisDao.getCustomerIdsbyZipcodeLastname(zipcode, last_name);
 		return dao.getCustomerListFromIDs(customerIDList);
@@ -102,8 +107,12 @@ public class BankService {
 		return transactions;
 	}
 
-	public void addTag(String accountNo, String trandate, String transactionID, String tag, String operation) {
-		dao.addTag(accountNo,trandate, transactionID,tag,operation);
+	public void addTag(String accountNo, String trandate, String transactionID, String tag, String operation) throws ParseException {
+		List<String> transactionKey = redisDao.addTag(accountNo, trandate, transactionID, tag, operation);
+		List <Transaction> transactions = dao.getTransactionsfromDelimitedKey(transactionKey);
+		for( Transaction trans:transactions) {
+			dao.addTagPreparedNoWork(accountNo, trans.getTransactionTime(), transactionID, tag);
+		}
 	}
 
 	public void addCustChange(String accountNo,String custid, String chgdate) {

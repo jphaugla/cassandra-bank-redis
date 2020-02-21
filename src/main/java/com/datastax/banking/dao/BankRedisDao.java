@@ -75,9 +75,10 @@ public class BankRedisDao  {
                 .addTextField("merchantctygcd", 1.0)
                 .addTextField("merchantname", 1.0)
                 .addTextField("cardNum", 1.0)
-                .addTextField("tags", 1.0)
+                .addTagField("tags")
                 .addTextField("bucket", 1.0)
                 .addTextField("account_no",1.0)
+                .addTextField("transactionID", 1.0)
                 .addSortableNumericField("unixTime")
                 .addTextField("postDate",1.0);
         //   this is creating the index returning the index
@@ -98,6 +99,7 @@ public class BankRedisDao  {
         fields.put("bucket", transaction.getBucket());
         fields.put("account_no", transaction.getAccountNo());
         fields.put("unixTime", unixtime);
+        fields.put("transactionID", transaction.getTransactionId().toString());
         fields.put("postDate", displayDate);
         String docID = transaction.getAccountNo() + ":" + unixtime + ":" + transaction.getTransactionId().toString();
         transClient.addDocument(new Document(docID, fields), new AddOptions());
@@ -157,14 +159,17 @@ public class BankRedisDao  {
         logger.warn("before return");
         return custidList;
     }
+
     public List<String> getCustomerIdsbyPhone(String phoneString) {
         logger.warn("in bankredisdao.getCustomerIdsbyPhone with phone=" + phoneString);
         return (returnCustomerIDsfromQuery("@phone:" + phoneString));
     }
+
     public List<String> getCustomerIdsbyStateCity(String state, String city) {
         logger.warn("in bankredisdao.getCustomerIdsbyState with state=" + state + " and city=" + city);
         return (returnCustomerIDsfromQuery("@state_abbreviation:" + state +  " @city:" + city));
     }
+
     public List<String> getCustomerByFullNamePhone(String fullName, String phone) {
         logger.warn("in bankredisdao.getCustomerByFullNamePhone with fullName=" + fullName + " and phone=" + phone);
         return (returnCustomerIDsfromQuery("@full_name:" + fullName + " @phone:" + phone));
@@ -177,17 +182,51 @@ public class BankRedisDao  {
         logger.warn("in bankredisdao.getCustomerIdsbyZipcodeLastname with zipcode=" + zipcode + " last_name=" + last_name);
         return (returnCustomerIDsfromQuery("@zipcode:" + zipcode + " @last_name:" + last_name));
     }
-    public List<String> getMerchantTransactions(String merchant, String account, String to, String from) throws ParseException {
-        String preamble="in bankredisdao.getTransactionMerchantCateg with ";
+
+    public String getDateToFromQueryString(String to, String from) throws ParseException {
         Date toDate = new SimpleDateFormat("MM/dd/yyyy").parse(to);
         Date fromDate = new SimpleDateFormat("MM/dd/yyyy").parse(from);
         Long toUnix = toDate.getTime();
         Long fromUnix = fromDate.getTime();
+        return " @unixTime:[" + fromUnix + " " + toUnix + "]";
+    }
+
+    public String getDateFullDayQueryString(String stringDate) throws ParseException {
+        Date inDate = new SimpleDateFormat("MM/dd/yyyy").parse(stringDate);
+        Long inUnix = inDate.getTime();
+        //  since the transaction ID is also in the query can take a larger reach around the date column
+        Long startUnix = inUnix - 86400;
+        Long endUnix = inUnix + 86400;
+        return " @unixTime:[" + startUnix + " " + endUnix + "]";
+    }
+
+    public List<String> getMerchantTransactions(String merchant, String account, String to, String from) throws ParseException {
+        String preamble="bankredisdao.getTransactionMerchantCateg with ";
+        String tofromQuery = getDateToFromQueryString(to, from);
         logger.warn(preamble + "merchantname=" + merchant + " account=" + account + " to=" + to + " from=" + from);
-        String Q="@merchantname:" + merchant + " @account_no:" + account + " @unixTime:[" + fromUnix + " " + toUnix + "]";
+        String Q="@merchantname:" + merchant + " @account_no:" + account + tofromQuery;
         logger.warn("in bankredisdao.getTransactionMerchantCateg with Q=" + Q);
         return (returnTransactionsfromIDs(Q));
     }
+
+    public List<String> addTag(String accountNo, String trandate, String transactionID, String tag, String operation) throws ParseException {
+        String preamble="bankredisdao.addTag with ";
+        logger.warn(preamble + "accountNo=" + accountNo + " trandate=" + trandate + " tranID=" +
+                        transactionID + " tag=" + tag +  " operation=" + operation);
+        String tofromQuery = getDateFullDayQueryString(trandate);
+        String Q="@account_no:" + accountNo + " @transactionID:" + transactionID + tofromQuery;
+        return (returnTransactionsfromIDs(Q));
+    }
+
+    public List<String> getCreditCardTransactions(String creditCard, String account, String to, String from) throws ParseException {
+        String preamble="bankredisdao.getCreditCardTransactions with ";
+        String tofromQuery = getDateToFromQueryString(to, from);
+        logger.warn(preamble + "creditCard=" + creditCard + " account=" + account + " to=" + to + " from=" + from);
+        String Q="@cardNum:" + creditCard + " @account_no:" + account + tofromQuery;
+        logger.warn("in bankredisdao.getCreditCardTransactions with Q=" + Q);
+        return (returnTransactionsfromIDs(Q));
+    }
+
     public List<String> returnTransactionsfromIDs(String QueryString) {
         Query q = new Query (QueryString);
         setHost("localhost",6379);

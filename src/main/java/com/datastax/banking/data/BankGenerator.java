@@ -194,7 +194,7 @@ public class BankGenerator {
 		transaction.setAccountNo(account.getAccountNo());
 		transaction.setMerchant(issuer);
 		transaction.setTransactionId(idx);
-        transaction.setcardNum( UUID.randomUUID().toString());
+        transaction.setcardNum( UUID.randomUUID().toString().replace('-','x'));
 		transaction.setTransactionTime(aNewDate);
 		transaction.setLocation(location);
 		transaction.setTags(tags);

@@ -8,6 +8,8 @@ import com.datastax.banking.service.BankService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -19,6 +21,12 @@ import java.util.List;
 public class BankingWS {
 	private static final Logger logger = LoggerFactory.getLogger(BankingWS.class);
 
+	private static class uiTag {
+     	public String accountNo;
+     	public String trandate;
+     	public String transactionID;
+     	public String tag;
+	 }
 
 	@Autowired
 
@@ -83,37 +91,24 @@ public class BankingWS {
 		logger.debug("In getMerchantTransactions merchant=" + merchant + " account=" + account + " to=" + to + " from=" + from);
 		return bankService.getMerchantTransactions(merchant, account, to, from);
 	}
+
+	@GetMapping("/creditCardTransactions")
+
+	public List<Transaction> getCreditCardTransactions(@RequestParam String creditCard, @RequestParam String account,
+													 @RequestParam String from, @RequestParam String to) throws ParseException {
+		logger.debug("getCreditCardTransactions creditCard=" + creditCard + " account=" + account + " to=" + to + " from=" + from);
+		return bankService.getCreditCardTransactions(creditCard, account, to, from);
+	}
+
+	@PostMapping("/posttag")
+	public ResponseEntity<Object> createProduct(@RequestBody uiTag tagdata) throws ParseException {
+		bankService.addTag(tagdata.accountNo, tagdata.trandate, tagdata.transactionID, tagdata.tag,"+");
+		return new ResponseEntity<>("Tag is created successfully", HttpStatus.CREATED);
+	}
+
 	/*
-	@GET
-	@Path("/get/categorydescrip/{mrchntctgdesc}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getTransactionsCTGDESC(@PathParam("mrchntctgdesc") String mrchntctgdesc) {
 
-		List<Transaction> transactions = bankService.getTransactionsCTGDESC(mrchntctgdesc);
 
-		return Response.status(Status.OK).entity(transactions).build();
-	}
-	@GET
-	@Path("/get/getcctransactions/{creditcardno}/{from}/{to}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getCCTransactions(@PathParam("creditcardno") String ccNo, @PathParam("from") String fromDate,
-	@PathParam("to") String toDate) {
-		DateTime from = DateTime.now();
-		DateTime to = DateTime.now();
-		try {
-			from = new DateTime(inputDateFormat.parse(fromDate));
-			to = new DateTime(inputDateFormat.parse(toDate));
-		} catch (ParseException e) {
-			String error = "Caught exception parsing dates " + fromDate + "-" + toDate;
-
-			logger.error(error);
-			return Response.status(Status.BAD_REQUEST).entity(error).build();
-		}
-
-		List<Transaction> result = bankService.getTransactionsForCCNoDateSolr(ccNo,null, from, to);
-		logger.info("Returned response");
-		return Response.status(Status.OK).entity(result).build();
-	}
 	@POST
 	@Path("posttag")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
