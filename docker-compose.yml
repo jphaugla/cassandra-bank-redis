@@ -13,10 +13,10 @@ services:
       - "9042:9042"
       - "9160:9160"
     volumes:
-      - ./bitnami/cassandra:/bitnami
+      - ./cassandra:/bitnami
 
   redis:
-    image: "redislabs/redisearch:latest"
+    image: "redislabs/redisearch:edge"
     container_name: redis
     ports:
       - "6379:6379"
