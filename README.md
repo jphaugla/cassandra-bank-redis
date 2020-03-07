@@ -1,6 +1,11 @@
 ## Cassandra Bank day
 This github integrates cassandra and redisearch.  Since many banks use cassandra, they can initially leverage their cassandra investment and use redisearch as and index and search capability on top of cassandra.  
 
+### use docker compose to bring up the solution
+```bash
+docker-compose up -d
+```
+
 ### This is a diagram of the solution
 ![diagram solution](images/diagram.png)
 
