@@ -1,91 +1,36 @@
-Datastax Bank Techday
-========================
+## Cassandra Bank day
+This github integrates cassandra and redisearch.  Since many banks use cassandra, they can initially leverage their cassandra investment and use redisearch as and index and search capability on top of cassandra.  
 
-NOTE:  This asset has been changed heavily for DataStax internal use in our Assethub.  All the nodenames have been changed to "node0".  For this to work outside of the Assethub, edit your /etc/hosts file to add this node0 line.
+### This is a diagram of the solution
+![diagram solution][images/diagram.png]
 
-#
-127.0.0.1   node0
-#
+### Redisinsight is one of the docker containers
+To access redinsight, use `http://localhost:8001/` in the browser
+login using the redis  database name of `redis`
 
-To create the schema, run the following.  Note:  if search is not enabled the create index will fail but since it is last step, it is ok to terminate job and cassandr schema will be in place.
+### To create the schema, run the following.  
+```bash
+cqlsh -u cassandra -p jph -f src/main/resources/cql/create_schema.cql 
+```
+### To compile the code use maven or intellij
+```bash
+mvn package
+```
 
-	mvn clean compile exec:java -Dexec.mainClass="com.datastax.demo.SchemaSetup" -DcontactPoints=localhost
+### To start the API layer, use runit script
+```bash
+./runit.sh
+```
+### To create the customers, accounts and transactions
+Note: script can be modified to change the number of each entity to be created
+This uses an API call to generate the data
+```bash
+./scripts/generateData.sh	
+```
+The api for the webservices are in the ./scripts directory each script may need to be customized depending on the amount of data generated.  
+Each script has a short explanation.  To get initial values go to redinsight and use these queries.  
+In the Redsearch interface, from the dropdowns, select SEARCH, TRANSACTION and enter "@account_no:ACCT2" for the query.  Use these values for any transaction API's.  Next, select SEARCH, CUSTOMER and enter "@state_abbreviation:MN".
 
-To create the customers, accounts and transactions, run the following (note the create parameter to create customers and accounts as well)
-	
-	mvn clean compile exec:java -Dexec.mainClass="com.datastax.banking.Main"  -DcontactPoints=localhost -Dcreate=true
-
-You can use the following parameters to change the default no of transactions, customers and no of days.
-	
-	-DnoOfTransactions=10000000 -DnoOfCustomers=1000000 -DnoOfDays=5
-
-RealTime transactions
-When all historical transactions are loaded, the process will start creating random transactions for todays date and time. If you wish just to run real time transactions specify -DnoOfDays=0.
-
-To do the streaming, look at the README.md file in ./streaming
-
-To use the web service run 
-
-	mvn jetty:run
-	
-The api for the webservices are 
-
-Get Transactions for a Customer
-
-	http://{server}:8080/datastax-bank-techday/rest/get/customer/{customer_id}
-
-	http://localhost:8080/datastax-bank-techday/rest/get/customer/1000111
-
-Get Customer Accounts
-	
-	http://{server}:8080/datastax-bank-techday/rest/get/accounts/{customer_id}
-	
-	http://localhost:8080/datastax-bank-techday/rest/get/accounts/1000111
-	
-Get Transactions For Account 
-	
-	http://{server}:8080/datastax-bank-techday/rest/get/transactions/{account_id}
-	
-	http://localhost:8080/datastax-bank-techday/rest/get/transactions/eeceed17-5d7e-40de-be07-bdc2f075feb6
-
-Get Customers by email - email string can have wildcards
-	
-	http://{server}:8080/datastax-bank-techday/rest/get/customerByEmail/{phoneString}
-
-	http://localhost:8080/datastax-bank-techday/rest/get/customerByEmail/100011*
-
-Get Customers by phone number - phone string can have wildcards
-	
-	http://{server}:8080/datastax-bank-techday/rest/get/customerByPhone/{phoneString}
-
-	http://localhost:8080/datastax-bank-techday/rest/get/customerByPhone/100011*
-
-Get Customers by full name and phone number - both strings can have wildcards
-
-	http://{server}:8080/datastax-bank-techday/rest/get/customerByFullNamePhone/{fullName}/{phoneString}/
-	http://localhost:8080/datastax-bank-techday/rest/get/customerByFullNamePhone/*Jason*/100011*/
-
-Get Customers by credit card number (wildcards work) start and end transaction date
-
-	http://{server}:8080/datastax-bank-techday/rest/get/getcctransactions/{cardnum}/{fromDate}/{toDate}/
-	http://localhost:8080/datastax-bank-techday/rest/get/getcctransactions/5a4e5d9e-56c6-41bd-855a-3c38884be07f/20170925/20180101/
-
-Get Customers by credit card number (wildcards work) start and end transaction date with particular TAG
-
-	http://{server}:8080/datastax-bank-techday/rest/get/getcctransactionsTag/{cardnum}/{fromDate}/{toDate}/{tag}/
-	http://localhost:8080/datastax-bank-techday/rest/get/getcctransactionsTag/5a4e5d9e-56c6-41bd-855a-3c38884be07f/20170925/20180101/Work
-
-To remove the tables and the schema, run the following.
-
-    mvn clean compile exec:java -Dexec.mainClass="com.datastax.demo.SchemaTeardown"
-    
-
-Resources in src/main/resources/cql
-
-    queries.txt       - cql queries on the customer table 
-    trans_queries.txt - cql queries on the transaction table 
-    createSolr.cql    - create solr core with cql
-    copyToCSV.cql     - copy all table to csv files (run from main directory for output to go in export folder) 	
 
 Resources in src/main/resources/api/
 

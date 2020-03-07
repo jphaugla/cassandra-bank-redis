@@ -47,7 +47,7 @@ public class BankingWS {
 		return bankService.getCustomerByPhone(phoneString);
 	}
 
-	@GetMapping("/customerByState")
+	@GetMapping("/customerByStateCity")
 
 	public List<Customer> getCustomerByStateCity(@RequestParam String state, @RequestParam String city) {
 		logger.debug("IN get customerByState with state as " + state + " and city=" + city);
