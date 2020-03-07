@@ -2,7 +2,7 @@
 This github integrates cassandra and redisearch.  Since many banks use cassandra, they can initially leverage their cassandra investment and use redisearch as and index and search capability on top of cassandra.  
 
 ### This is a diagram of the solution
-![diagram solution][images/diagram.png]
+![diagram solution](images/diagram.png)
 
 ### Redisinsight is one of the docker containers
 To access redinsight, use `http://localhost:8001/` in the browser
