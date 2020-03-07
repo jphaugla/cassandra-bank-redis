@@ -1,0 +1,31 @@
+# IntelliJ
+# # .idea/
+# *.iml
+# *.ipr
+# *.iws
+
+# Eclipse
+.classpath
+.project
+.metadata
+.settings/
+local.properties
+
+# Maven, etc.
+out/
+target/
+streaming/producer/target/
+streaming/consumer/target/
+
+# General
+*~
+*.bak
+*.sw[o,p]
+*.tmp
+.DS_Store
+Thumbs.db
+/bitnami/
+/.startup/
+/redisinsight/
+/redis_data/
+/cassandra/
