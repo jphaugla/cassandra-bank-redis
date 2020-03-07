@@ -1,12 +1,12 @@
-package com.datastax.banking.dao;
-import com.datastax.banking.model.Transaction;
-import com.datastax.banking.webservice.BankingWS;
+package com.cassandra.banking.dao;
+import com.cassandra.banking.model.Transaction;
+import com.cassandra.banking.webservice.BankingWS;
+import com.cassandra.banking.model.Customer;
 import io.redisearch.Query;
 import io.redisearch.client.AddOptions;
 import io.redisearch.client.Client;
 import io.redisearch.Document;
 import io.redisearch.SearchResult;
-import com.datastax.banking.model.Customer;
 import org.apache.commons.lang3.StringUtils;
 import io.redisearch.Schema;
 

@@ -9,8 +9,8 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>com.datastax.creditcard</groupId>
-	<artifactId>datastax-bank-techday</artifactId>
+	<groupId>com.cassandra.creditcard</groupId>
+	<artifactId>cassandra-bank-techday</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
@@ -19,7 +19,7 @@
            <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
            <cassandra.driver.version>3.8.0</cassandra.driver.version>
 	   <jredisearch.version>1.3.0</jredisearch.version>
-           <start-class>com.datastax.banking.DemoApplication</start-class>
+           <start-class>com.cassandra.banking.DemoApplication</start-class>
            <java.version>1.8</java.version>
         </properties>
 

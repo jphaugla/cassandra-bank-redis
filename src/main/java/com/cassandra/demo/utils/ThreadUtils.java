@@ -1,4 +1,4 @@
-package com.datastax.demo.utils;
+package com.cassandra.demo.utils;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;

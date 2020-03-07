@@ -1,4 +1,4 @@
-package com.datastax.banking.data;
+package com.cassandra.banking.data;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,10 +13,10 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.joda.time.DateTime;
-import com.datastax.banking.model.Account;
-import com.datastax.banking.model.Customer;
-import com.datastax.banking.model.Transaction;
-import com.datastax.banking.service.BankService;
+import com.cassandra.banking.model.Account;
+import com.cassandra.banking.model.Customer;
+import com.cassandra.banking.model.Transaction;
+import com.cassandra.banking.service.BankService;
 
 public class BankGenerator {
 

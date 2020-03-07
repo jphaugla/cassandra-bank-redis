@@ -1,9 +1,9 @@
-package com.datastax.demo;
+package com.cassandra.demo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.datastax.demo.utils.FileUtils;
+import com.cassandra.demo.utils.FileUtils;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.exceptions.InvalidQueryException;

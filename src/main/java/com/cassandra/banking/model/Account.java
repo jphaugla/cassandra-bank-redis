@@ -1,4 +1,4 @@
-package com.datastax.banking.model;
+package com.cassandra.banking.model;
 
 import java.util.Date;
 import java.util.List;

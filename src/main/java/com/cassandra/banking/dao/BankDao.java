@@ -1,4 +1,4 @@
-package com.datastax.banking.dao;
+package com.cassandra.banking.dao;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -10,12 +10,12 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.datastax.banking.data.BankGenerator;
-import com.datastax.banking.model.Account;
-import com.datastax.banking.model.Customer;
-import com.datastax.banking.model.Transaction;
-import com.datastax.banking.model.Email;
-import com.datastax.banking.model.Phone;
+import com.cassandra.banking.data.BankGenerator;
+import com.cassandra.banking.model.Account;
+import com.cassandra.banking.model.Customer;
+import com.cassandra.banking.model.Transaction;
+import com.cassandra.banking.model.Email;
+import com.cassandra.banking.model.Phone;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;

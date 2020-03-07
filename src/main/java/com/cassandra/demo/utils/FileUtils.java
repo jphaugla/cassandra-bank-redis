@@ -1,4 +1,4 @@
-package com.datastax.demo.utils;
+package com.cassandra.demo.utils;
 
 import java.io.BufferedReader;
 import java.io.File;

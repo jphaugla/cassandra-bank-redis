@@ -1,9 +1,9 @@
-package com.datastax.banking.webservice;
+package com.cassandra.banking.webservice;
 
-import com.datastax.banking.model.Account;
-import com.datastax.banking.model.Customer;
-import com.datastax.banking.model.Transaction;
-import com.datastax.banking.service.BankService;
+import com.cassandra.banking.model.Account;
+import com.cassandra.banking.model.Customer;
+import com.cassandra.banking.model.Transaction;
+import com.cassandra.banking.service.BankService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

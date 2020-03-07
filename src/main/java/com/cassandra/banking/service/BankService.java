@@ -1,4 +1,4 @@
-package com.datastax.banking.service;
+package com.cassandra.banking.service;
 
 import java.text.ParseException;
 import java.util.*;
@@ -7,18 +7,18 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
-import com.datastax.banking.dao.BankDao;
-import com.datastax.banking.dao.BankRedisDao;
-import com.datastax.banking.data.BankGenerator;
-import com.datastax.banking.model.Account;
-import com.datastax.banking.model.Customer;
+import com.cassandra.banking.dao.BankDao;
+import com.cassandra.banking.dao.BankRedisDao;
+import com.cassandra.banking.data.BankGenerator;
+import com.cassandra.banking.model.Account;
+import com.cassandra.banking.model.Customer;
 
-import com.datastax.banking.model.Transaction;
+import com.cassandra.banking.model.Transaction;
 
-import com.datastax.demo.utils.KillableRunner;
-import com.datastax.demo.utils.PropertyHelper;
+import com.cassandra.demo.utils.KillableRunner;
+import com.cassandra.demo.utils.PropertyHelper;
 
-import com.datastax.demo.utils.Timer;
+import com.cassandra.demo.utils.Timer;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

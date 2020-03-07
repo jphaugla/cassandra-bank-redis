@@ -1,4 +1,4 @@
-package com.datastax.demo;
+package com.cassandra.demo;
 
 public class SchemaSetup extends RunCQLFile {
 

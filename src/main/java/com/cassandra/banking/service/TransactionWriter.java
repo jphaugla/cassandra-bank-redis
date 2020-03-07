@@ -1,11 +1,11 @@
-package com.datastax.banking.service;
+package com.cassandra.banking.service;
 
 import java.util.concurrent.BlockingQueue;
 
-import com.datastax.banking.dao.BankDao;
-import com.datastax.banking.dao.BankRedisDao;
-import com.datastax.banking.model.Transaction;
-import com.datastax.demo.utils.KillableRunner;
+import com.cassandra.banking.dao.BankDao;
+import com.cassandra.banking.dao.BankRedisDao;
+import com.cassandra.banking.model.Transaction;
+import com.cassandra.demo.utils.KillableRunner;
 
 
 class TransactionWriter implements KillableRunner {
