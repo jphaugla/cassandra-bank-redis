@@ -12,6 +12,8 @@ import io.redisearch.Schema;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisDataException;
 
@@ -39,7 +41,10 @@ public class BankRedisDao  {
     }
 
     public Client createClient(String index_name) {
-        Client returnClient = new io.redisearch.client.Client(index_name, hostname, portNo);
+        JedisPoolConfig poolConfig = new JedisPoolConfig();
+        poolConfig.setMaxTotal(128);
+        JedisPool jedisPool = new JedisPool(poolConfig, hostname, portNo);
+        Client returnClient = new io.redisearch.client.Client(index_name, jedisPool);
         if(index_name == "customer") {
             custClient = returnClient;
         }

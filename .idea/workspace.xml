@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="291fd3ce-e478-4a6e-8c89-b069a30bcb73" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/scripts/getByMerchant.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/getByMerchant.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/getByState.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/cassandra-bank-redis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/cassandra-bank-redis.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/cassandra/banking/dao/BankRedisDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cassandra/banking/dao/BankRedisDao.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,11 +94,11 @@
       <screen x="0" y="23" width="1920" height="1177" />
     </state>
     <state x="531" y="172" key="SettingsEditor/0.23.1920.1177@0.23.1920.1177" timestamp="1581635976160" />
-    <state x="736" y="423" key="com.intellij.ide.util.TipDialog" timestamp="1583602643749">
+    <state x="736" y="423" key="com.intellij.ide.util.TipDialog" timestamp="1583609780755">
       <screen x="0" y="23" width="1920" height="1177" />
     </state>
     <state x="552" y="321" key="com.intellij.ide.util.TipDialog/0.23.1440.877@0.23.1440.877" timestamp="1582561686880" />
-    <state x="736" y="423" key="com.intellij.ide.util.TipDialog/0.23.1920.1177@0.23.1920.1177" timestamp="1583602643749" />
+    <state x="736" y="423" key="com.intellij.ide.util.TipDialog/0.23.1920.1177@0.23.1920.1177" timestamp="1583609780755" />
     <state x="633" y="214" width="670" height="676" key="search.everywhere.popup" timestamp="1582226831197">
       <screen x="0" y="23" width="1920" height="1177" />
     </state>
