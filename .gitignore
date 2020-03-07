@@ -1,8 +1,9 @@
 # IntelliJ
-# # .idea/
+# .idea/
 # *.iml
 # *.ipr
 # *.iws
+.idea/libraries
 
 # Eclipse
 .classpath
