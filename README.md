@@ -36,18 +36,3 @@ The api for the webservices are in the ./scripts directory each script may need 
 Each script has a short explanation.  To get initial values go to redinsight and use these queries.  
 In the Redsearch interface, from the dropdowns, select SEARCH, TRANSACTION and enter "@account_no:ACCT2" for the query.  Use these values for any transaction API's.  Next, select SEARCH, CUSTOMER and enter "@state_abbreviation:MN".
 
-
-Resources in src/main/resources/api/
-
-    addTag.html    - add tag to a transaction by opening this file from browser
-    removeTag.html - remove tag from a transaction by opening this file from browser
-    addTag.sh      - add tag to a transaction using curl command
-    removeTag.sh   - remove tag from a transaction using curl command
-    addCustChange.sh - use API to add a row to the bank.cust_change table.  The cust_change table is joined to transaction stream to flag transactions with recent customer change
-
-scripts in src/main/scripts/  (all of these must be run from root directory)
-
-    compileSetup.sh - compile and run including creating customers and accounts and transactions
-    runTrans.sh - compile and run without creating customers and accounts (only transactions)
-    top100.sh  - put top 100 records to sharing directory from export directory for each csv 
-
