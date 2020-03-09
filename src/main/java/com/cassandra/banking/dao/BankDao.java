@@ -190,16 +190,7 @@ public class BankDao {
 		// logger.info("writing addCustChange update statement");
 		ResultSetFuture rs = this.session.executeAsync(this.addCustomerChange.bind(accountNo,custid,last_update));
 	}
-	/* public void addTag(String accountNo, Date trandate, String transactionID, String tag, String operation) throws ParseException {
-		String cql = "update " + transactionTable + " set tags = tags " + operation + "{'" + tag
-				+ "'} where account_no = '" + accountNo + "' and tranPostDt > '" + transtart + "' and tranPostDt < '"
-				+ transend + "'	 and tranId = " + transactionID;
-		logger.info("writing addTag update statement with cql =" + cql);
-		ResultSet rs = this.session.execute(cql);
 
-		//  set tags = ? where account_no = ? and tranPostDt = ? and tranId = ?";
-	}
-	 */
 	public void insertCustomer(Customer customer) {		
 		customerMapper.saveAsync(customer);
 		
