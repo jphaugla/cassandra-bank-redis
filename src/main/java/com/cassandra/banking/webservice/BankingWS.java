@@ -101,7 +101,7 @@ public class BankingWS {
 	}
 
 	@PostMapping("/posttag")
-	public ResponseEntity<Object> createProduct(@RequestBody uiTag tagdata) throws ParseException {
+	public ResponseEntity<Object> createTag(@RequestBody uiTag tagdata) throws ParseException {
 		bankService.addTag(tagdata.accountNo, tagdata.trandate, tagdata.transactionID, tagdata.tag,"+");
 		return new ResponseEntity<>("Tag is created successfully", HttpStatus.CREATED);
 	}

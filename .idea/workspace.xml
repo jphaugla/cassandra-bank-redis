@@ -2,9 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="291fd3ce-e478-4a6e-8c89-b069a30bcb73" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/cassandra-bank-redis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/cassandra-bank-redis.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/putTag.sh" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/putTag.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/cassandra/banking/dao/BankDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cassandra/banking/dao/BankDao.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/cassandra/banking/dao/BankRedisDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cassandra/banking/dao/BankRedisDao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/cassandra/banking/model/Transaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cassandra/banking/model/Transaction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/cassandra/banking/service/BankService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cassandra/banking/service/BankService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/cassandra/banking/webservice/BankingWS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cassandra/banking/webservice/BankingWS.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
