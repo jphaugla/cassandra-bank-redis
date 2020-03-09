@@ -125,6 +125,12 @@ public class Transaction {
 		return tags;
 	}
 
+	public String retrieveStringTags() {
+		// Convert the Set of String to String
+			String tagString = String.join(", ", getTags());
+			return tagString;
+	}
+
 	public void setTags(Set<String> tags) {
 		this.tags = tags;
 	}

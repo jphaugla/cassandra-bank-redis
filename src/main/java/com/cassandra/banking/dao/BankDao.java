@@ -179,8 +179,8 @@ public class BankDao {
 		accountMapper.saveAsync(account);
 	}
 
-	public void addTagPreparedNoWork(String accountNo, Date trandate, String transactionID, String tag) {
-		String tagSet = " tags + {'" + tag + "'} ";
+	public void addTagPreparedNoWork(String accountNo, Date trandate, Integer transactionID, Set<String> tagSet) {
+		// String tagSet = " tags + {'" + tag + "'} ";
 		// logger.info("writing addTag update statement with tags set to "+ tagSet);
 		ResultSetFuture rs = this.session.executeAsync(this.addTransactionTag.bind(tagSet,accountNo,trandate,transactionID));
 

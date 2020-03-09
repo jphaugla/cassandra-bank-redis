@@ -110,8 +110,10 @@ public class BankService {
 	public void addTag(String accountNo, String trandate, String transactionID, String tag, String operation) throws ParseException {
 		List<String> transactionKey = redisDao.addTag(accountNo, trandate, transactionID, tag, operation);
 		List <Transaction> transactions = dao.getTransactionsfromDelimitedKey(transactionKey);
+		Set<String> tagSet = new HashSet<String>(Arrays.asList(tag.split(", ")));
+		int transactionInt=Integer.parseInt(transactionID);
 		for( Transaction trans:transactions) {
-			dao.addTagPreparedNoWork(accountNo, trans.getTransactionTime(), transactionID, tag);
+			dao.addTagPreparedNoWork(accountNo, trans.getTransactionTime(), transactionInt, tagSet);
 		}
 	}
 

@@ -100,15 +100,23 @@ public class BankRedisDao  {
         fields.put("merchantctygcd", transaction.getmerchantCtygCd());
         fields.put("merchantname", transaction.getMerchant());
         fields.put("cardNum", transaction.getcardNum()   );
-        fields.put("tags", transaction.getTags());
+        fields.put("tags", transaction.retrieveStringTags());
         fields.put("bucket", transaction.getBucket());
         fields.put("account_no", transaction.getAccountNo());
         fields.put("unixTime", unixtime);
         fields.put("transactionID", transaction.getTransactionId().toString());
         fields.put("postDate", displayDate);
         String docID = transaction.getAccountNo() + ":" + unixtime + ":" + transaction.getTransactionId().toString();
-        transClient.addDocument(new Document(docID, fields), new AddOptions());
+        transClient.addDocument(new Document(docID, fields));
         // Map<String, Object> info = custClient.getInfo();
+        return 1;
+    }
+    public int updateTransactionTag(String transaction, String newTag)
+    {
+        // logger.warn("entering addTransactionDocument" + transaction.getTransactionId());
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("tags", newTag);
+        transClient.updateDocument(transaction, 1.0, fields);
         return 1;
     }
 
@@ -200,8 +208,8 @@ public class BankRedisDao  {
         Date inDate = new SimpleDateFormat("MM/dd/yyyy").parse(stringDate);
         Long inUnix = inDate.getTime();
         //  since the transaction ID is also in the query can take a larger reach around the date column
-        Long startUnix = inUnix - 86400;
-        Long endUnix = inUnix + 86400;
+        Long startUnix = inUnix - 86400*1000;
+        Long endUnix = inUnix + 86400*1000;
         return " @unixTime:[" + startUnix + " " + endUnix + "]";
     }
 
@@ -220,7 +228,11 @@ public class BankRedisDao  {
                         transactionID + " tag=" + tag +  " operation=" + operation);
         String tofromQuery = getDateFullDayQueryString(trandate);
         String Q="@account_no:" + accountNo + " @transactionID:" + transactionID + tofromQuery;
-        return (returnTransactionsfromIDs(Q));
+        List<String> transactionList = returnTransactionsfromIDs(Q);
+        for(String transaction : transactionList) {
+            updateTransactionTag(transaction, tag);
+        }
+        return (transactionList);
     }
 
     public List<String> getCreditCardTransactions(String creditCard, String account, String to, String from) throws ParseException {
@@ -233,6 +245,8 @@ public class BankRedisDao  {
     }
 
     public List<String> returnTransactionsfromIDs(String QueryString) {
+        logger.warn("in bankredisdao.returnTransactionsfromIDs QueryString=" + QueryString);
+
         Query q = new Query (QueryString);
         setHost("localhost",6379);
         SearchResult searchResult = createClient("transaction").search(q);
@@ -240,9 +254,11 @@ public class BankRedisDao  {
         Long numDocs = searchResult.totalResults;
         logger.warn("in bankredisdao.returnTransactionsfromIDs after numdocs=" + numDocs.toString());
         List<Document> ldoc = searchResult.docs;
+        String documentID;
         for(Document document : ldoc) {
-            transIdList.add(document.getId());
-            logger.warn("adding to transaction list string=" + document.getId());
+            documentID = document.getId();
+            transIdList.add(documentID);
+            logger.warn("adding to transaction list string=" + documentID);
         }
         logger.warn("before return");
         return transIdList;
