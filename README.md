@@ -36,5 +36,7 @@ The api for the webservices are in the ./scripts directory each script may need 
 Each script has a short explanation.  To get initial values go to redinsight and use these queries.  
 These are the scripts
 [here](scripts)
+
+
 In the Redsearch interface, from the dropdowns, select SEARCH, TRANSACTION and enter "@account_no:ACCT2" for the query.  Use these values for any transaction API's.  Next, select SEARCH, CUSTOMER and enter "@state_abbreviation:MN".
 
