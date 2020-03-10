@@ -33,10 +33,11 @@ This uses an API call to generate the data
 ./scripts/generateData.sh	
 ```
 The api for the webservices are in the ./scripts directory each script may need to be customized depending on the amount of data generated.  
-Each script has a short explanation.  To get initial values go to redinsight and use these queries.  
+Each script has a short explanation.  
 These are the scripts
 [here](scripts)
 
 
+To get initial values go to redinsight
 In the Redsearch interface, from the dropdowns, select SEARCH, TRANSACTION and enter "@account_no:ACCT2" for the query.  Use these values for any transaction API's.  Next, select SEARCH, CUSTOMER and enter "@state_abbreviation:MN".
 
