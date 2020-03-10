@@ -23,6 +23,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 
@@ -123,6 +124,10 @@ public class BankService {
 
 	public List<Transaction> getTransactionsCTGDESC(String mrchntctgdesc) {
 		return dao.getTransactionsCTGDESC(mrchntctgdesc);
+	}
+	public Map<String, Object> getIndexInfo( String indexName) throws redis.clients.jedis.exceptions.JedisDataException {
+		logger.debug("In get indexInfo with indexName as " + indexName);
+		return redisDao.indexInfo(indexName);
 	}
 
 	public String generateData(Integer noOfCustomers, Integer noOfTransactions, Integer noOfDays,

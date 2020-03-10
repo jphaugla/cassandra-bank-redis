@@ -13,7 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -106,5 +108,34 @@ public class BankingWS {
 		return new ResponseEntity<>("Tag is created successfully", HttpStatus.CREATED);
 	}
 
+	@GetMapping("/indexInfo")
+
+	public Map<String, Object> indexInfo(@RequestParam String indexName)   {
+		logger.warn("In get indexInfo with indexName as " + indexName);
+		Map<String, Object> returnValue = new HashMap<>();
+		returnValue.put(indexName,"not found");
+		try {
+			returnValue = bankService.getIndexInfo(indexName);
+		}
+		catch (redis.clients.jedis.exceptions.JedisDataException e) {
+			returnValue.put(indexName,"not found");
+		}
+		return returnValue;
+	}
+	@GetMapping("/indexExists")
+
+	public boolean indexExists(@RequestParam String indexName)   {
+		logger.warn("In get indexExists with indexName as " + indexName);
+		Map<String, Object> returnMap = null;
+		boolean foundit = true;
+		try {
+			returnMap = bankService.getIndexInfo(indexName);
+			foundit = true;
+		}
+		catch (redis.clients.jedis.exceptions.JedisDataException e) {
+			 foundit = false;
+		}
+		return foundit;
+	}
 	
 }

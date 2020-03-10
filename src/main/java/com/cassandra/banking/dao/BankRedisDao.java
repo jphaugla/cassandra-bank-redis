@@ -120,6 +120,10 @@ public class BankRedisDao  {
         return 1;
     }
 
+    public Map<String, Object> indexInfo(String indexName)  throws redis.clients.jedis.exceptions.JedisDataException {
+        return(createClient(indexName).getInfo());
+    }
+
     public boolean createCustomerSchema() {
         logger.warn("entering createCustomerSchema");
         if (portNo>0) {
