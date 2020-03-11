@@ -12,14 +12,15 @@ import io.redisearch.Schema;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.*;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisDataException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static redis.clients.jedis.ScanParams.SCAN_POINTER_START;
 
 public class BankRedisDao  {
     private String hostname;
@@ -108,7 +109,6 @@ public class BankRedisDao  {
         fields.put("postDate", displayDate);
         String docID = transaction.getAccountNo() + ":" + unixtime + ":" + transaction.getTransactionId().toString();
         transClient.addDocument(new Document(docID, fields));
-        // Map<String, Object> info = custClient.getInfo();
         return 1;
     }
     public int updateTransactionTag(String transaction, String newTag)
@@ -161,6 +161,7 @@ public class BankRedisDao  {
        // Map<String, Object> info = custClient.getInfo();
         return 1;
     }
+
     public List<String> returnCustomerIDsfromQuery(String QueryString) {
         Query q = new Query (QueryString);
         setHost("localhost",6379);

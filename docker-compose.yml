@@ -32,3 +32,13 @@ services:
       - ./redisinsight:/db
     depends_on:
       - redis
+  jupyter:
+    image: jupyter/minimal-notebook
+    volumes:
+      - ./src/main/python:/home/jovyan/src
+    ports:
+      - 8888:8888
+    container_name: jupyter
+    depends_on:
+      - redis
+

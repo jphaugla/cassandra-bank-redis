@@ -1,6 +1,8 @@
 ## Cassandra Bank day
 This github integrates cassandra and redisearch.  Since many banks use cassandra, they can initially leverage their cassandra investment and use redisearch as and index and search capability on top of cassandra.  
 
+Additionally, a python utility returns the size of all redis indexes in the redis database
+
 ### use docker compose to bring up the solution
 ```bash
 docker-compose up -d
@@ -41,3 +43,14 @@ These are the scripts
 To get initial values go to redinsight
 In the Redsearch interface, from the dropdowns, select SEARCH, TRANSACTION and enter "@account_no:ACCT2" for the query.  Use these values for any transaction API's.  Next, select SEARCH, CUSTOMER and enter "@state_abbreviation:MN".
 
+## report on size of redis indexes
+
+### install required python imports
+```bash
+docker exec -it jupyter bash -c "pip install -r src/requirements.txt"
+```
+
+### execute python script to calculate size of indexes
+```bash
+docker exec -it jupyter bash -c "python src/scan.py"
+```
