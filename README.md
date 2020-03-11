@@ -54,3 +54,10 @@ docker exec -it jupyter bash -c "pip install -r src/requirements.txt"
 ```bash
 docker exec -it jupyter bash -c "python src/scan.py"
 ```
+### sample output
+```bash
+starting main
+index=customer, size in mb=0.06198883056640625
+index=transaction, size in mb=10.725600242614746
+total index size=10.787589073181152
+```
