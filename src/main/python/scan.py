@@ -18,7 +18,7 @@ def list_indexes():
         while cursor != 0:
             cursor, keys = r.scan(cursor, match='idx:*', count=10000)
             for i in keys:
-                docList = i.split("/")
+                docList = i.split("{")
                 keyName=docList[0]
                 indexName=keyName.split(":")
                 returnSet.add(indexName[1])
