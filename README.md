@@ -1,5 +1,6 @@
 ## Cassandra Bank day
-This github integrates cassandra and redisearch.  Since many banks use cassandra, they can initially leverage their cassandra investment and use redisearch as and index and search capability on top of cassandra.  
+This github integrates cassandra and redisearch.  Since many banks use cassandra, they can initially leverage their 
+cassandra investment and use redisearch as an index and search capability on top of cassandra.  
 
 Additionally, a python utility returns the size of all redis indexes in the redis database
 
@@ -11,11 +12,15 @@ docker-compose up -d
 ### This is a diagram of the solution
 ![diagram solution](images/diagram.png)
 
+*Note:*  this github is built to run on docker on one machine using open source tooling.  *localhost* is hardcoded all over 
+the java code.  No work was done to have this parametized but replacing *localhost* with an IP address does work and
+has been tested.
+
 ### Redisinsight is one of the docker containers
 To access redinsight, use `http://localhost:8001/` in the browser
 login using the redis  database name of `redis`
 
-### To create the schema, run the following.  
+### To create the cassandra schema, run the following.  
 ```bash
 cqlsh -u cassandra -p jph -f src/main/resources/cql/create_schema.cql 
 ```
@@ -27,6 +32,10 @@ mvn package
 ### To start the API layer, use runit script
 ```bash
 ./runit.sh
+```
+### To create the redis indexes
+```bash
+./scripts/createRedisIndex.sh
 ```
 ### To create the customers, accounts and transactions
 Note: script can be modified to change the number of each entity to be created
