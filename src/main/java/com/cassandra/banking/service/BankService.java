@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 
 public class BankService {
 
-	private static String contactPointsStr = PropertyHelper.getProperty("contactPoints", "34.70.57.120");
+	private static String contactPointsStr = PropertyHelper.getProperty("contactPoints", "localhost");
 	private static BankService bankService = new BankService();
 	private static final Logger logger = LoggerFactory.getLogger(BankService.class);
 	private BankDao dao;
@@ -39,7 +39,7 @@ public class BankService {
 	private BankService(){
 		dao = new BankDao(contactPointsStr.split(","));
 		redisDao = new BankRedisDao();
-		redisDao.setHost("34.70.57.120",6379);
+		redisDao.setHost("localhost",6379);
 		redisDao.createJedisPool();
 	}
 

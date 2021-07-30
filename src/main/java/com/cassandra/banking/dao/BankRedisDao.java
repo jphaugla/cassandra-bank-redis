@@ -186,8 +186,10 @@ public class BankRedisDao  {
         logger.warn("after numdocs=" + numDocs.toString());
         List<Document> ldoc = searchResult.docs;
         for(Document document : ldoc) {
-            custidList.add(document.getId());
-            logger.warn("adding to custid list string=" + document.getId());
+		String fullKey=document.getId();
+		String[] onlyID =  fullKey.split(":");
+		custidList.add(onlyID[1]);
+		logger.warn("adding to custid list string=" + onlyID[1] + " original ID was " + fullKey);
         }
         logger.warn("before return");
         return custidList;
@@ -276,9 +278,10 @@ public class BankRedisDao  {
         List<Document> ldoc = searchResult.docs;
         String documentID;
         for(Document document : ldoc) {
-            documentID = document.getId();
-            transIdList.add(documentID);
-            logger.warn("adding to transaction list string=" + documentID);
+            String fullKey = document.getId();
+	    String onlyID = fullKey.replace("transaction:","");
+            transIdList.add(onlyID);
+            logger.warn("adding to transaction list string=" + onlyID + " fullKey is " + fullKey);
         }
         logger.warn("before return");
         return transIdList;
