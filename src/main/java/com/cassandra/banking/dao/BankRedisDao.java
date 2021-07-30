@@ -3,10 +3,11 @@ import com.cassandra.banking.model.Transaction;
 import com.cassandra.banking.webservice.BankingWS;
 import com.cassandra.banking.model.Customer;
 import io.redisearch.Query;
-import io.redisearch.client.AddOptions;
+
 import io.redisearch.client.Client;
 import io.redisearch.Document;
 import io.redisearch.SearchResult;
+import io.redisearch.client.IndexDefinition;
 import org.apache.commons.lang3.StringUtils;
 import io.redisearch.Schema;
 
@@ -20,13 +21,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static redis.clients.jedis.ScanParams.SCAN_POINTER_START;
-
 public class BankRedisDao  {
     private String hostname;
     private Integer portNo;
     private Client custClient;
     private Client transClient;
+    private JedisPool jedisPool;
 
     private static final Logger logger = LoggerFactory.getLogger(BankingWS.class);
 
@@ -41,10 +41,13 @@ public class BankRedisDao  {
         return returnClient;
     }
 
-    public Client createClient(String index_name) {
+    public JedisPool createJedisPool() {
         JedisPoolConfig poolConfig = new JedisPoolConfig();
         poolConfig.setMaxTotal(128);
-        JedisPool jedisPool = new JedisPool(poolConfig, hostname, portNo);
+        jedisPool = new JedisPool(poolConfig, hostname, portNo);
+        return jedisPool;
+    }
+    public Client createClient(String index_name) {
         Client returnClient = new io.redisearch.client.Client(index_name, jedisPool);
         if(index_name == "customer") {
             custClient = returnClient;
@@ -71,12 +74,9 @@ public class BankRedisDao  {
         }
         return flag;
     }
+
     public boolean createTransactionSchema() {
         logger.warn("entering createTransactionSchema");
-        if (portNo>0) {
-            setHost("localhost",6379);
-            createClient("transaction").dropIndex(true);
-        }
         Schema schema = new Schema().addTagField("merchantctgydesc")
                 .addTextField("merchantctygcd", 1.0)
                 .addTextField("merchantname", 1.0)
@@ -87,8 +87,11 @@ public class BankRedisDao  {
                 .addTextField("transactionID", 1.0)
                 .addSortableNumericField("unixTime")
                 .addTextField("postDate",1.0);
-        //   this is creating the index returning the index
-        return createClient("transaction").createIndex(schema, io.redisearch.client.Client.IndexOptions.Default());
+        transClient = createClient("transaction");
+        transClient.dropIndex(true);
+        String prefix = "transaction:";
+        io.redisearch.client.IndexDefinition def = new IndexDefinition().setPrefixes(prefix);
+        return(transClient.createIndex(schema, Client.IndexOptions.defaultOptions().setDefinition(def)));
     }
     public int addTransactionDocument(Transaction transaction)
     {
@@ -96,7 +99,7 @@ public class BankRedisDao  {
         Date transactimeDate = transaction.getTransactionTime();
         long unixtime = transactimeDate.getTime();
         String displayDate = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(transactimeDate);
-        Map<String, Object> fields = new HashMap<>();
+        Map<String, String> fields = new HashMap<>();
         fields.put("merchantctygdesc", transaction.getmerchantCtgyDesc());
         fields.put("merchantctygcd", transaction.getmerchantCtygCd());
         fields.put("merchantname", transaction.getMerchant());
@@ -104,19 +107,27 @@ public class BankRedisDao  {
         fields.put("tags", transaction.retrieveStringTags());
         fields.put("bucket", transaction.getBucket());
         fields.put("account_no", transaction.getAccountNo());
-        fields.put("unixTime", unixtime);
+        fields.put("unixTime", String.valueOf(unixtime));
         fields.put("transactionID", transaction.getTransactionId().toString());
         fields.put("postDate", displayDate);
-        String docID = transaction.getAccountNo() + ":" + unixtime + ":" + transaction.getTransactionId().toString();
-        transClient.addDocument(new Document(docID, fields));
+        String docID = "transaction:" + transaction.getAccountNo() + ":" + unixtime + ":" + transaction.getTransactionId().toString();
+        // transClient.addDocument(new Document(docID, fields));
+        try(Jedis conn = transClient.connection()) {
+            conn.hmset(docID, fields);
+        }
+
         return 1;
     }
     public int updateTransactionTag(String transaction, String newTag)
     {
         // logger.warn("entering addTransactionDocument" + transaction.getTransactionId());
-        Map<String, Object> fields = new HashMap<>();
-        fields.put("tags", newTag);
-        transClient.updateDocument(transaction, 1.0, fields);
+       // Map<String, Object> fields = new HashMap<>();
+        // fields.put("tags", newTag);
+        // transClient.updateDocument(transaction, 1.0, fields);
+        try(Jedis conn = transClient.connection()) {
+            conn.hset(transaction, "tags", newTag);
+        }
+
         return 1;
     }
 
@@ -126,10 +137,6 @@ public class BankRedisDao  {
 
     public boolean createCustomerSchema() {
         logger.warn("entering createCustomerSchema");
-        if (portNo>0) {
-            setHost("localhost",6379);
-            createClient("customer").dropIndex(true);
-        }
         Schema schema = new Schema().addTextField("city", 1.0)
                 .addTextField("state_abbreviation", 1.0)
                 .addTextField("email_address", 1.0)
@@ -137,8 +144,12 @@ public class BankRedisDao  {
                 .addTextField("first_name", 1.0)
                 .addTextField("zipcode", 1.0)
                 .addTextField("phone",1.0);
+        String prefix = "customer:";
+        custClient = createClient("customer");
+        custClient.dropIndex(true);
+        io.redisearch.client.IndexDefinition def = new IndexDefinition().setPrefixes(prefix);
         //   this is creating the index returning the index
-        return createClient("customer").createIndex(schema, io.redisearch.client.Client.IndexOptions.Default());
+        return(custClient.createIndex(schema, Client.IndexOptions.defaultOptions().setDefinition(def)));
     }
     public boolean validateIndexSchema(String index_name) {
         List b = (List) getClient("customer").getInfo().get("fields");
@@ -148,7 +159,7 @@ public class BankRedisDao  {
     public int addCustomerDocument(Customer customer)
     {
      //   logger.warn("entering addCustomerDocument");
-        Map<String, Object> fields = new HashMap<>();
+        Map<String, String> fields = new HashMap<>();
         fields.put("city", customer.getCity());
         fields.put("state_abbreviation", customer.getstate_abbreviation());
         fields.put("email_address", customer.retrieveStringOfEmails()   );
@@ -157,7 +168,11 @@ public class BankRedisDao  {
         fields.put("zipcode", customer.getzipcode());
         fields.put("phone", customer.retrieveStringOfPhones());
         fields.put("full_name", customer.getfull_name());
-        custClient.addDocument(new Document(customer.getCustomerId(), fields), new AddOptions());
+        String customerID = "customer:" + customer.getCustomerId();
+        // custClient.addDocument(new Document(customer.getCustomerId(), fields), new AddOptions());
+        try(Jedis conn2 = custClient.connection()) {
+            conn2.hmset(customerID, fields);
+        }
        // Map<String, Object> info = custClient.getInfo();
         return 1;
     }

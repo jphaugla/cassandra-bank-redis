@@ -73,6 +73,15 @@ public class BankingWS {
 		return "Done";
 	}
 
+	@GetMapping("/createRedisIndex")
+	@ResponseBody
+	public String createRedisIndex () {
+
+		bankService.createRedisIndex();
+
+		return "Done";
+	}
+
 	@GetMapping("/customerByFullNamePhone")
 
 	public List<Customer> getCustomerByFullNamePhone(@RequestParam String fullName, @RequestParam String phone) {

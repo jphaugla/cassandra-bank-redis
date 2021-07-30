@@ -23,13 +23,12 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 
 public class BankService {
 
-	private static String contactPointsStr = PropertyHelper.getProperty("contactPoints", "localhost");
+	private static String contactPointsStr = PropertyHelper.getProperty("contactPoints", "34.70.57.120");
 	private static BankService bankService = new BankService();
 	private static final Logger logger = LoggerFactory.getLogger(BankService.class);
 	private BankDao dao;
@@ -40,7 +39,8 @@ public class BankService {
 	private BankService(){
 		dao = new BankDao(contactPointsStr.split(","));
 		redisDao = new BankRedisDao();
-		redisDao.setHost("localhost",6379);
+		redisDao.setHost("34.70.57.120",6379);
+		redisDao.createJedisPool();
 	}
 
 	
@@ -130,6 +130,11 @@ public class BankService {
 		return redisDao.indexInfo(indexName);
 	}
 
+	public void createRedisIndex() {
+		redisDao.createCustomerSchema();
+		redisDao.createTransactionSchema();
+	}
+
 	public String generateData(Integer noOfCustomers, Integer noOfTransactions, Integer noOfDays,
 	Integer noOfThreads) {
 
@@ -138,9 +143,6 @@ public class BankService {
 
 		//Executor for Threads
 		ExecutorService executor = Executors.newFixedThreadPool(noOfThreads);
-		redisDao.setHost("localhost", 6379);
-		redisDao.createCustomerSchema();
-		redisDao.createTransactionSchema();
 
 		createCustomerAccount(noOfCustomers, dao, redisDao);
 
